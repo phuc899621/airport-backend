@@ -9,21 +9,6 @@
     <a href="#"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license" /></a>
   </p>
 </p>
-
----
-
-## Mục lục
-- [Giới thiệu](#giới-thiệu)
-- [Tính năng chính](#tính-năng-chính)
-- [Cài đặt & Chạy nhanh](#cài-đặt--chạy-nhanh)
-- [Cấu hình môi trường (.env)](#cấu-hình-môi-trường-env)
-- [Xem tài liệu API (Swagger)](#xem-tài-liệu-api-swagger)
-- [Cấu trúc thư mục (Clean Architecture)](#cấu-trúc-thư-mục-clean-architecture)
-- [Ví dụ request nhanh](#ví-dụ-request-nhanh)
-- [Các script hữu dụng](#các-script-hữu-dụng)
-- [Ghi chú phát triển](#ghi-chú-phát-triển)
-- [License & Contact](#license--contact)
-
 ---
 
 ## Giới thiệu
@@ -47,3 +32,22 @@ API được mô tả và có thể demo trực tiếp thông qua **Swagger UI**
 ```bash
 git clone https://github.com/your-username/airport-backend.git
 cd airport-backend
+```
+
+### 2. Cài dependency và chạy
+```bash
+npm install
+npm run dev
+```
+- Server sẽ chạy ở http://localhost:3000
+
+### 3. Xem tài liệu API (Swagger)
+Swagger UI đã được cấu hình sẵn. Sau khi server chạy, mở trình duyệt và truy cập: 
+__http://localhost:3000/api/docs__
+
+Tại đây, bạn có thẻ:
+- Xem toàn bộ API
+- Xem params, query, body yêu cầu
+
+
+
