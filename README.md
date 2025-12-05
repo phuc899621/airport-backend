@@ -1,51 +1,49 @@
-✈️ Airport Management Backend
+<!-- Logo + Title -->
+<p align="center">
+  <img alt="Airport" src="assets/logo.png" width="100" />
+  <h1 align="center">✈️ Airport Management Backend</h1>
+  <p align="center">Backend API cho hệ thống quản lý chuyến bay (Node.js + Express + PostgreSQL) với Swagger UI.</p>
+  <p align="center">
+    <a href="#"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="node" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/status-development-orange" alt="status" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/license-MIT-blue" alt="license" /></a>
+  </p>
+</p>
 
-Backend API cho hệ thống quản lý chuyến bay, sử dụng Node.js + Express + PostgreSQL.
-Dự án hỗ trợ đầy đủ CRUD cho máy bay, sân bay, chuyến bay, đặt chỗ và vé.
-Ngoài ra API được mô tả và demo trực tiếp thông qua Swagger UI.
+---
 
-🚀 1. Cách chạy dự án
-Clone source:
+## Mục lục
+- [Giới thiệu](#giới-thiệu)
+- [Tính năng chính](#tính-năng-chính)
+- [Cài đặt & Chạy nhanh](#cài-đặt--chạy-nhanh)
+- [Cấu hình môi trường (.env)](#cấu-hình-môi-trường-env)
+- [Xem tài liệu API (Swagger)](#xem-tài-liệu-api-swagger)
+- [Cấu trúc thư mục (Clean Architecture)](#cấu-trúc-thư-mục-clean-architecture)
+- [Ví dụ request nhanh](#ví-dụ-request-nhanh)
+- [Các script hữu dụng](#các-script-hữu-dụng)
+- [Ghi chú phát triển](#ghi-chú-phát-triển)
+- [License & Contact](#license--contact)
+
+---
+
+## Giới thiệu
+**Backend API** cho hệ thống quản lý chuyến bay, sử dụng **Node.js + Express + PostgreSQL**.  
+Dự án hỗ trợ đầy đủ CRUD cho: **máy bay**, **sân bay**, **chuyến bay**, **đặt chỗ** và **vé**.  
+API được mô tả và có thể demo trực tiếp thông qua **Swagger UI**.
+
+---
+
+## Tính năng chính
+- CRUD cho Flights / Planes / Airports / Tickets / Bookings  
+- Xác thực bằng JWT  
+- Validate input bằng Joi  
+- Swagger UI để xem & test API trực tiếp
+
+---
+
+## Cài đặt & Chạy nhanh
+
+### 1. Clone source
+```bash
 git clone https://github.com/your-username/airport-backend.git
 cd airport-backend
-
-Cài đặt dependencies:
-npm install
-
-Tạo file .env với nội dung:
-PORT=3000
-DATABASE_URL=postgresql://username:password@host:5432/dbname
-NODE_ENV=development
-
-Chạy dự án:
-npm run dev
-
-Server sẽ chạy ở:
-👉 http://localhost:3000
-
-📘 2. Xem tài liệu API (Swagger)
-
-Swagger UI đã được cấu hình sẵn.
-
-Sau khi chạy server, mở trình duyệt và truy cập:
-
-👉 http://localhost:3000/api-docs
-
-Tại đây bạn có thể:
-
-Xem toàn bộ API
-
-Xem params, body, response
-
-Test API trực tiếp không cần Postman
-
-🏗 3. Cấu trúc thư mục (Clean Architecture)
-src/
-├── config/ # cấu hình app, db, swagger
-├── controllers/ # nhận request, gọi service
-├── services/ # xử lý logic
-├── repositories/ # truy vấn database
-├── routes/ # khai báo route
-├── middlewares/ # validate, auth
-├── utils/ # công cụ phụ trợ
-└── app.js
