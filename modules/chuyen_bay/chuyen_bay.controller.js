@@ -5,11 +5,14 @@ import MayBayRepo from '../may_bay/may_bay.repo.js';
 import SanBayRepo from '../san_bay/san_bay.repo.js';
 import ChuyenBayService from './chuyen_bay.service.js';
 import db from '../../core/config/db.js';
+import SanBayTrungGianRepo from './san_bay_trung_gian.repo.js';
 
 const chuyenBayRepo=new ChuyenBayRepo(db);
 const mayBayRepo=new MayBayRepo(db);
 const sanBayRepo=new SanBayRepo(db);
-const chuyenBayService=new ChuyenBayService(chuyenBayRepo,sanBayRepo,mayBayRepo,mayBayRepo);
+const sanBayTrungGianRepo=new SanBayTrungGianRepo(db);
+const chuyenBayService=new ChuyenBayService(
+    chuyenBayRepo,sanBayRepo,mayBayRepo,sanBayTrungGianRepo);
 
 export const layLichChuyenBay = async (req, res) => {
     try{
@@ -37,6 +40,45 @@ export const layChuyenBay = async (req, res) => {
         errorHandler(res, err);
     }
 };
+export const laySanBayTrungGian = async (req, res) => {
+    try{
+        const {maChuyenBay,maSanBay}=req.params;
+        const sanBayTrungGian=await chuyenBayService.laySanBayTrungGian(maChuyenBay,maSanBay);
+        res.status(200).json({
+            success: true,
+            message: "Lấy sân bay trung gian thành công!",
+            data: sanBayTrungGian
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
+export const taoSanBayTrungGian = async (req, res) => {
+    try{
+        const {maChuyenBay}=req.params;
+        const sanBayTrungGian=await chuyenBayService.taoSanBayTrungGian(maChuyenBay,req.body);
+        res.status(201).json({
+            success: true,
+            message: "Tạo sân bay trung gian thành công!",
+            data: sanBayTrungGian
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
+export const capNhatSanBayTrungGian = async (req, res) => {
+    try{
+        const {maChuyenBay,maSanBay}=req.params;
+        const sanBayTrungGian=await chuyenBayService.capNhatSanBayTrungGian(maChuyenBay,maSanBay,req.body);
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật sân bay trung gian thành công!",
+            data: sanBayTrungGian
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
 
 export const taoChuyenBay = async (req, res) => {
     try{
@@ -72,6 +114,19 @@ export const xoaChuyenBay = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Xóa chuyến bay thành công!",
+            data: {}
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+};
+export const xoaSanBayTrungGian = async (req, res) => {
+    try{
+        const {maChuyenBay,maSanBay}=req.params;
+        await chuyenBayService.xoaSanBayTrungGian(maChuyenBay,maSanBay);
+        res.status(200).json({
+            success: true,
+            message: "Xóa sân bay trung gian thành công!",
             data: {}
         }); 
     }catch(err){

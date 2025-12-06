@@ -36,7 +36,7 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: "#/components/schemas/MayBayObject"
+ *                     $ref: "#/components/schemas/LayMayBayObject"
  *       500:
  *         description: Lỗi server
  *         content:
@@ -106,7 +106,7 @@
  *                   type: string
  *                   example: "Lấy máy bay thành công!"
  *                 data:
- *                   $ref: "#/components/schemas/MayBayObject"
+ *                   $ref: "#/components/schemas/MayBayChiTietObject"
  *       500:
  *         description: Lỗi server
  *         content:
@@ -114,7 +114,7 @@
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
  *
- *   put:
+ *   patch:
  *     tags:
  *       - MayBay [Admin]
  *     summary: Cập nhật máy bay

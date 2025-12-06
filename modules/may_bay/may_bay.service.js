@@ -1,5 +1,6 @@
 import { NotFoundError, ValidationError } from "../../core/errors/errors.js";
 import MayBayBO from "./may_bay.bo.js";
+import MayBayChiTietBO from "./may_bay_chi_tiet.bo.js";
 
 export default class MayBayService{
     constructor(mayBayRepo, sanBayRepo) {
@@ -15,11 +16,11 @@ export default class MayBayService{
     async layMayBay({ maMayBay, loaiMayBay, maSanBay }) {
         if(maMayBay) {
             const mayBayRaw=await this.repo.layMayBayTheoMaMayBay(maMayBay);
-            return mayBayRaw?new MayBayBO(mayBayRaw):null;
+            return mayBayRaw?new MayBayChiTietBO(mayBayRaw):null;
         }
         console.log("tim maybay nhap vap"+maSanBay+","+loaiMayBay);
         const mayBayRaw=await this.repo.layMayBayTheoFilter({maSanBay,loaiMayBay});
-        return mayBayRaw.map(mayBayRaw => new MayBayBO(mayBayRaw));
+        return mayBayRaw.map(mayBayRaw => new MayBayChiTietBO(mayBayRaw));
     }
     async capNhatMayBay(maMayBay,update={}) {
         const fieldMap={

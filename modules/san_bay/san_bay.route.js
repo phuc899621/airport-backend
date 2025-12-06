@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/", validate(SanBayValidator.laySanBayQuerySchema,ValidateOption.QUERY),SanBayController.laySanBay); 
 router.get("/:maSanBay", validate(SanBayValidator.laySanBayParamsSchema,ValidateOption.PARAMS),SanBayController.laySanBay);
 router.post("/", validate(SanBayValidator.taoSanBayBodySchema),SanBayController.taoSanBay); 
-router.put("/:maSanBay",
+router.patch("/:maSanBay",
     validate(SanBayValidator.capNhatSanBayParamsSchema,ValidateOption.PARAMS),
     validate(SanBayValidator.capNhatSanBayBodySchema),SanBayController.capNhatSanBay); 
 router.delete("/:maSanBay", 

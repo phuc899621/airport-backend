@@ -27,8 +27,10 @@ export default class MayBayRepo {
         try {
             const executor = tx || this.db;
             const rows = await executor`
-                SELECT * FROM "MAYBAY"
-                WHERE "MaMayBay" = ${maMayBay}
+                SELECT * FROM "MAYBAY" as mb
+                LEFT JOIN "SANBAY" as sb
+                ON mb."MaSanBay" = sb."MaSanBay"
+                WHERE mb."MaMayBay" = ${maMayBay}
                 LIMIT 1;
             `;
             return rows[0] || null;
@@ -42,7 +44,9 @@ export default class MayBayRepo {
             const executor = tx || this.db;
             const {maSanBay,loaiMayBay} = filter;
             return await executor`
-                SELECT * FROM "MAYBAY"
+                SELECT * FROM "MAYBAY" as mb
+                LEFT JOIN "SANBAY" as sb
+                ON mb."MaSanBay" = sb."MaSanBay"
                 WHERE 1=1
                 ${maSanBay ? executor`AND "MaSanBay" = ${maSanBay}`:executor``}
                 ${loaiMayBay ? executor`AND "LoaiMayBay" ILIKE ${'%' + loaiMayBay+'%'}`:executor``}

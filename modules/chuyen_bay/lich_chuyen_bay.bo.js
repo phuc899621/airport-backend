@@ -8,6 +8,10 @@ dayjs.extend(timezone);
 export default class LichChuyenBayBO{
     constructor({
         MaChuyenBay=null,
+        MaSanBayDi=null,
+        MaSanBayDen=null,
+        QuocGiaSanBayDi=null,
+        QuocGiaSanBayDen=null,
         TenSanBayDi=null,
         TenSanBayDen=null,
         MaMayBay=null,
@@ -26,27 +30,31 @@ export default class LichChuyenBayBO{
     }){
         const thoiGianDi=dayjs(NgayGio);
         const thoiGianDen=thoiGianDi.add(ThoiGianBay,'m');
-        this.MaChuyenBay=MaChuyenBay;
-        this.TenSanBayDi=TenSanBayDi;
-        this.TenSanBayDen=TenSanBayDen;
-        this.MaMayBay=MaMayBay;
-        this.LoaiMayBay=LoaiMayBay;
-        this.ThoiGianBay=ThoiGianBay;
-        this.SLGheHang1=SLGheHang1;
-        this.SLGheHang2=SLGheHang2;
-        this.SLGheHang1ConLai=SLGheHang1ConLai;
-        this.SLGheHang2ConLai=SLGheHang2ConLai;
-        this.NgayGio=NgayGio;
-        this.MaHienThi=MaHienThi;
-        this.GiaVe=GiaVe;
-        this.GiaVeHang1=GiaVeHang1;
-        this.GiaVeHang2=GiaVeHang2;
-        this.ThoiGianDi=thoiGianDi;
-        this.ThoiGianDen=thoiGianDen;
-        this.SanBayTrungGian=SanBayTrungGian;
+        this.maChuyenBay=MaChuyenBay;
+        this.maSanBayDi=MaSanBayDi;
+        this.maSanBayDen=MaSanBayDen;
+        this.thoiGianBay=ThoiGianBay;
+        this.quocGiaSanBayDi=QuocGiaSanBayDi;
+        this.quocGiaSanBayDen=QuocGiaSanBayDen;
+        this.tenSanBayDi=TenSanBayDi;
+        this.tenSanBayDen=TenSanBayDen;
+        this.maMayBay=MaMayBay;
+        this.loaiMayBay=LoaiMayBay;
+        this.thoiGianDi=thoiGianDi.toISOString();
+        this.thoiGianDen=thoiGianDen.toISOString();
+        this.slGheHang1=SLGheHang1;
+        this.slGheHang2=SLGheHang2;
+        this.slGheHang1ConLai=SLGheHang1ConLai;
+        this.slGheHang2ConLai=SLGheHang2ConLai;
+        this.ngayGio=NgayGio;
+        this.maHienThi=MaHienThi;
+        this.giaVe=GiaVe;
+        this.giaVeHang1=GiaVeHang1;
+        this.giaVeHang2=GiaVeHang2;
+        this.sanBayTrungGian=SanBayTrungGian;
     }
     themSanBayTrungGian(maChuyenBay,sanBayTrungGian){
-        if(!maChuyenBay||maChuyenBay!==this.MaChuyenBay) return;
-        this.SanBayTrungGian.push(sanBayTrungGian);
+        if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
+        this.sanBayTrungGian.push(sanBayTrungGian);
     }
 }

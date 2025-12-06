@@ -73,6 +73,29 @@ export const layChuyenBayParamsSchema = joi.object({
     })
     
 })
+export const layDanhSachSanBayTrungGianParamsSchema = joi.object({
+    maChuyenBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã chuyến bay phải là số nguyên dương",
+        "number.integer": "Mã chuyến bay phải là số nguyên dương",
+        "number.positive": "Mã chuyến bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã chuyến bay",
+    })
+})
+export const laySanBayTrungGianParamsSchema = joi.object({
+    maChuyenBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã chuyến bay phải là số nguyên dương",
+        "number.integer": "Mã chuyến bay phải là số nguyên dương",
+        "number.positive": "Mã chuyến bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã chuyến bay",
+    }),
+    maSanBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã sân bay phải là số nguyên dương",
+        "number.integer": "Mã sân bay phải là số nguyên dương",
+        "number.positive": "Mã sân bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã sân bay",
+    })
+})
+
 
 export const taoChuyenBayBodySchema = joi.object({
     maSanBayDi: joi.number().integer().positive().required().messages({
@@ -115,6 +138,33 @@ export const taoChuyenBayBodySchema = joi.object({
         "any.required": "Vui lòng cung cấp giá vé",
     }),
 })
+
+export const taoSanBayTrungGianBodySchema = joi.object({
+    maSanBay: joi.number().integer().positive().required().messages({
+      "number.base": "Mã sân bay phải là số nguyên dương",
+      "number.integer": "Mã sân bay phải là số nguyên dương",
+      "number.positive": "Mã sân bay phải là số nguyên dương",
+      "any.required": "Vui lòng cung cấp mã sân bay",
+    }),
+    thoiGianDung: joi.number().integer().positive().required().messages({
+        "number.base": "Thời gian dùng phải là số nguyên dương",
+        "number.integer": "Thời gian dùng phải là số nguyên dương",
+        "number.positive": "Thời gian dùng phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp thời gian dừng",
+    }),
+    ghiChu: joi.string().optional().messages({
+        "string.base": "Ghi chú phải là một chuỗi",
+    })
+})
+export const taoSanBayTrungGianParamsSchema = joi.object({
+    maChuyenBay: joi.number().integer().positive().required().messages({
+      "number.base": "Mã chuyển bay phải là số nguyên dương",
+      "number.integer": "Mã chuyển bay phải là số nguyên dương",
+      "number.positive": "Mã chuyển bay phải là số nguyên dương",
+      "any.required": "Vui lòng cung cấp mã chuyển bay",
+    })
+})
+
 
 export const capNhatChuyenBayBodySchema = joi.object({
     maSanBayDi: joi.number().integer().positive().optional().messages({
@@ -160,11 +210,53 @@ export const capNhatChuyenBayParamsSchema = joi.object({
     })
 })
 
+export const capNhatSanBayTrungGianParamsSchema = joi.object({
+    maChuyenBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã chuyến bay phải là số nguyên dương",
+        "number.integer": "Mã chuyến bay phải là số nguyên dương",
+        "number.positive": "Mã chuyến bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã chuyến bay",
+    }),
+    maSanBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã sân bay phải là số nguyên dương",
+        "number.integer": "Mã sân bay phải là số nguyên dương",
+        "number.positive": "Mã sân bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã sân bay",
+    })
+})
+
+export const capNhatSanBayTrungGianBodySchema = joi.object({
+    thoiGianDung: joi.number().integer().positive().optional().messages({
+        "number.base": "Thời gian dừng phải là số nguyên dương",
+        "number.integer": "Thời gian dừng phải là số nguyên dương",
+        "number.positive": "Thời gian dừng phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp thời gian dừng",
+    }),
+    ghiChu: joi.string().optional().messages({
+        "string.base": "Ghi chú phải là một chuỗi",
+    })
+})
+
+
 export const xoaChuyenBayParamsSchema= joi.object({
     maChuyenBay: joi.number().integer().positive().required().messages({
         "number.base": "Mã chuyến bay phải là số nguyên dương",
         "number.integer": "Mã chuyến bay phải là số nguyên dương",
         "number.positive": "Mã chuyến bay phải là số nguyên dương",
         "any.required": "Vui lòng cung cấp mã chuyến bay",
+    })
+})
+export const xoaSanBayTrungGianParamsSchema= joi.object({
+    maChuyenBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã chuyến bay phải là số nguyên dương",
+        "number.integer": "Mã chuyến bay phải là số nguyên dương",
+        "number.positive": "Mã chuyến bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã chuyến bay",
+    }),
+    maSanBay: joi.number().integer().positive().required().messages({
+        "number.base": "Mã sân bay phải là số nguyên dương",
+        "number.integer": "Mã sân bay phải là số nguyên dương",
+        "number.positive": "Mã sân bay phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã sân bay",
     })
 })

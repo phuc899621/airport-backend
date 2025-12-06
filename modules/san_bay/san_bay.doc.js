@@ -114,7 +114,7 @@
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
  *
- *   put:
+ *   patch:
  *     tags:
  *       - SanBay [Admin]
  *     summary: Cập nhật sân bay
