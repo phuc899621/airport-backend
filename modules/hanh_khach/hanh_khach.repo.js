@@ -13,6 +13,7 @@ export default class HanhKhachRepo {
             ${cmnd ? executor`AND "CMND" ILIKE ${'%' + cmnd+'%'}`:executor``}
             ${dienThoai ? executor`AND "DienThoai" ILIKE ${'%' + dienThoai+'%'}`:executor``}
             ${email ? executor`AND "Email" ILIKE ${'%' + email+'%'}`:executor``}
+            AND "DaXoa" = false
         `;
         return rows;
     }
@@ -20,7 +21,7 @@ export default class HanhKhachRepo {
         const executor = tx || this.db;
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
-            WHERE "MaHanhKhach" = ${maHanhKhach}
+            WHERE "MaHanhKhach" = ${maHanhKhach} AND "DaXoa" = false
             LIMIT 1;
         `;
         return rows[0] || null;
@@ -29,7 +30,7 @@ export default class HanhKhachRepo {
         const executor = tx || this.db;
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
-            WHERE "CMND" = ${cmnd}
+            WHERE "CMND" = ${cmnd} AND "DaXoa" = false
             LIMIT 1;
         `;
         return rows[0] || null;
@@ -38,7 +39,7 @@ export default class HanhKhachRepo {
         const executor = tx || this.db;
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
-            WHERE "DienThoai" = ${dienThoai}
+            WHERE "DienThoai" = ${dienThoai} AND "DaXoa" = false
             LIMIT 1;
         `;
         return rows[0] || null;
@@ -47,7 +48,7 @@ export default class HanhKhachRepo {
         const executor = tx || this.db;
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
-            WHERE "Email" = ${email}
+            WHERE "Email" = ${email} AND "DaXoa" = false
             LIMIT 1;
         `;
         return rows[0] || null;
@@ -61,4 +62,14 @@ export default class HanhKhachRepo {
         `;
         return rows[0];
     }
+    async xoaHanhKhach(maHanhKhach, tx){
+        const executor = tx || this.db;
+        const rows = await executor`
+            UPDATE "HANHKHACH"
+            SET "DaXoa" = true
+            WHERE "MaHanhKhach" = ${maHanhKhach};
+        `;
+        return rows[0];
+    }
+    
 }

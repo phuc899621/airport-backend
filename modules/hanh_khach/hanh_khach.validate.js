@@ -46,3 +46,12 @@ export const  taoHanhKhachBodySchema = Joi.object({
     })
 
 })
+
+export const xoaHanhKhachParamsSchema = Joi.object({
+    maHanhKhach: Joi.number().integer().positive().required().messages({
+        "number.base": "Mã hành khách phải là số nguyên dương",
+        "number.integer": "Mã hành khách phải là số nguyên dương",
+        "number.positive": "Mã hành khách phải là số nguyên dương",
+        "any.required": "Vui lòng cung cấp mã hành khách",
+    })
+});

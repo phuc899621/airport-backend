@@ -14,5 +14,6 @@ router.get("/:maHanhKhach",
     HanhKhachController.layHanhKhach);
 router.post("/", 
     validate(HanhKhachValidator.taoHanhKhachBodySchema),HanhKhachController.taoHanhKhach); 
-
+router.delete("/:maHanhKhach", 
+    validate(HanhKhachValidator.xoaHanhKhachParamsSchema,ValidateOption.PARAMS),HanhKhachController.xoaHanhKhach);
 export default router;

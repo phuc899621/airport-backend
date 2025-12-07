@@ -19,5 +19,10 @@ export default class HanhKhachService {
         const hanhKhachRaw=await this.repo.taoHanhKhach(data);
         return new HanhKhachBO(hanhKhachRaw);
     }
+    async xoaHanhKhach(maHanhKhach){
+        if(maHanhKhach && !(await this.repo.layHanhKhachTheoMaHanhKhach(maHanhKhach))) throw new ValidationError("Không tìm thấy hành khách");
+        const hanhKhachRaw=await this.repo.xoaHanhKhach(maHanhKhach);
+        return new HanhKhachBO(hanhKhachRaw);
+    }
 
 }

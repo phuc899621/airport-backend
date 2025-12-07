@@ -31,3 +31,16 @@ export const taoHanhKhach = async (req, res) => {
         errorHandler(res, err);
     }
 };
+export const xoaHanhKhach = async (req, res) => {
+    try{
+        const {maHanhKhach}=req.params;
+        const hanhKhach=await hanhKhachService.xoaHanhKhach(maHanhKhach);
+        res.status(200).json({
+            success: true,
+            message: "Xóa hành khách thành công!",
+            data: hanhKhach
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+};
