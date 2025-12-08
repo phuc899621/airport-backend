@@ -3,7 +3,7 @@
  * /san-bay:
  *   get:
  *     tags:
- *       - SanBay [Admin]
+ *       - SanBay
  *     summary: Lấy danh sách sân bay
  *     description: Lấy tất cả sân bay, có thể filter theo query params như quocGia.
  *     parameters:
@@ -46,7 +46,7 @@
  *
  *   post:
  *     tags:
- *       - SanBay [Admin]
+ *       - SanBay 
  *     summary: Tạo sân bay mới
  *     description: Thêm một sân bay mới vào hệ thống
  *     requestBody:
@@ -77,11 +77,60 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
- *
+ * 
+ * /san-bay/count:
+ *   get:
+ *     tags:
+ *       - SanBay 
+ *     summary: Lấy số lượng sân bay, có thể lọc theo tên, quocGia
+ *     parameters:
+ *       - in: path
+ *         name: maSanBay
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Mã sân bay
+ *         example: 1
+ *       - in: query
+ *         name: quocGia
+ *         schema:
+ *           type: string
+ *         description: Lọc sân bay theo quốc gia
+ *         example: Việt Nam     
+ *       - in: query
+ *         name: tenSanBay
+ *         schema:
+ *           type: string
+ *         description: Lọc sân bay theo tên sân bay
+ *         example: Sân bay Nội Bài
+ *     responses:
+ *       200:
+ *         description: Thông tin số lượng sân bay
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy sân bay thành công!"
+ *                 data: 
+ *                   type: integer
+ *                   example: 20
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BaseError"
+ * 
  * /san-bay/{maSanBay}:
  *   get:
  *     tags:
- *       - SanBay [Admin]
+ *       - SanBay 
  *     summary: Lấy thông tin sân bay theo maSanBay
  *     parameters:
  *       - in: path
@@ -116,16 +165,16 @@
  *
  *   patch:
  *     tags:
- *       - SanBay [Admin]
+ *       - SanBay 
  *     summary: Cập nhật sân bay
  *     parameters:
  *       - in: path
  *         name: maSanBay
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Mã sân bay cần cập nhật
- *         example: 1
+ *         example: SB001
  *     requestBody:
  *       required: true
  *       content:
@@ -157,16 +206,16 @@
  *
  *   delete:
  *     tags:
- *       - SanBay [Admin]
+ *       - SanBay 
  *     summary: Xóa sân bay
  *     parameters:
  *       - in: path
  *         name: maSanBay
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Mã sân bay cần xóa
- *         example: 1
+ *         example: SB001
  *     responses:
  *       200:
  *         description: Xóa sân bay thành công

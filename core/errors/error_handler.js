@@ -1,4 +1,4 @@
-import {HTTPError, DBError, BaseError} from "./errors.js";
+import {DBError, BaseError} from "./errors.js";
 import jwt from "jsonwebtoken";
 export function errorHandler(res,err){
     console.log(err);

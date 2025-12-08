@@ -1,15 +1,15 @@
 import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 
 export default class SanBayTrungGianChiTietBO extends SanBayTrungGianBO {
-    constructor({MaSanBay=null, MaChuyenBay=null, TenSanBay=null, 
+    constructor({MaSB=null, MaCB=null, TenSB=null, 
         QuocGia=null, ThoiGianDung=null,
         ThuTuDung=null,
         GhiChu=null}) {
-        super({MaSanBay, MaChuyenBay, TenSanBay, 
+        super({MaCB, MaSB, TenSB, 
             QuocGia, ThoiGianDung,
-            ThuTuDung,MaChuyenBay,
+            ThuTuDung,
             GhiChu});
-        this.tenSanBay = TenSanBay;
+        this.tenSanBay = TenSB;
         this.quocGia = QuocGia;
     }
 }

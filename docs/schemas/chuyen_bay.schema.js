@@ -8,11 +8,11 @@
  *         maChuyenBay:
  *           type: string
  *           description: Mã chuyến bay
- *           example: "1"
+ *           example: "CB001"
  *         maSanBay:
  *           type: string
  *           description: Mã sân bay thuộc chuyến bay
- *           example: "1"
+ *           example: "SB001"
  *         tenSanBay:
  *           type: string
  *           description: Tên sân bay thuộc sân bay trung gian của chuyến bay
@@ -26,9 +26,9 @@
  *           description: Thứ tự dừng sân bay trong chuyến bay (thường chỉ có 1 và 2)
  *           example: 1
  *         thoiGianDung:
- *           type: string
+ *           type: integer
  *           description: Thời gian dừng sân bay trong chuyến bay (tính bằng phút)
- *           example: "20"
+ *           example: 20
  *         ghiChu:
  *           type: string
  *           example: ""
@@ -39,19 +39,19 @@
  *         maChuyenBay:
  *           type: string
  *           description: Mã chuyến bay
- *           example: "1"
+ *           example: "CB001"
  *         maSanBay:
  *           type: string
  *           description: Mã sân bay thuộc chuyến bay
- *           example: "1"
+ *           example: "SB001"
  *         thuTuDung:
  *           type: integer
- *           description: Thứ tự dừng sân bay trong chuyến bay (thường chỉ có 1 và 2)
+ *           description: Thứ tự dừng sân bay trong chuyến bay 
  *           example: 1
  *         thoiGianDung:
- *           type: string
+ *           type: integer
  *           description: Thời gian dừng sân bay trong chuyến bay (tính bằng phút)
- *           example: "20"
+ *           example: 20
  *         ghiChu:
  *           type: string
  *           example: ""
@@ -62,15 +62,15 @@
  *         maChuyenBay:
  *           type: string
  *           description: Mã chuyến bay
- *           example: "1"
+ *           example: "CB001"
  *         maSanBayDi:
  *           type: string
  *           description: Mã sân bay đi
- *           example: "1"
+ *           example: "SB001"
  *         maSanBayDen:
  *           type: string
  *           description: Mã sân bay đến    
- *           example: "7"    
+ *           example: "SB002"    
  *         quocGiaSanBayDi:
  *           type: string
  *           description: Quốc gia sân bay đi
@@ -87,15 +87,9 @@
  *           type: string
  *           description: Tên sân bay đến
  *           example: "Melbourne Airport"
- *         maMayBay:
- *           type: string
- *           example: "1"
- *         loaiMayBay:
- *           type: string
- *           example: "Airbus A320"
  *         thoiGianBay:
- *           type: string
- *           example: "240"
+ *           type: integer
+ *           example: 240
  *         slGheHang1:
  *           type: integer
  *           example: 14
@@ -103,20 +97,16 @@
  *           type: integer
  *           example: 86
  *         slGheHang1ConLai:
- *           type: string
- *           example: "14"
+ *           type: integer
+ *           example: 14
  *         slGheHang2ConLai:
- *           type: string
- *           example: "86"
+ *           type: integer
+ *           example: 86
  *         ngayGio:
  *           type: string
  *           format: date-time
  *           description: "Thời gian khỏi hành"
  *           example: "2025-12-01T11:40:52.000Z"
- *         maHienThi:
- *           type: string
- *           description: "Mã hiển thị của chuyến bay"
- *           example: "VN789"
  *         giaVe:
  *           type: integer
  *           example: 700000
@@ -134,7 +124,7 @@
  *         thoiGianDen:
  *           type: string
  *           format: date-time
- *           description: "Thời gian đến dự kiên khi cộng thoiGianDi với thoiGianBay"
+ *           description: "Thời gian đến dự kiên khi cộng thoiGianDi, thoiGianBay, thoiGianDung"
  *           example: "2025-12-01T15:40:52.000Z"
  *         SanBayTrungGian:
  *           type: array
@@ -147,16 +137,13 @@
  *       properties:
  *         maChuyenBay:
  *           type: string
- *           example: "10"
- *         maMayBay:
- *           type: string
- *           example: "1"
+ *           example: "CB001"
  *         maSanBayDi:
  *           type: string
- *           example: "1"
+ *           example: "SB001"
  *         maSanBayDen:
  *           type: string
- *           example: "7"
+ *           example: "SB002"
  *         giaVe:
  *           type: integer
  *           example: 1500000
@@ -166,32 +153,32 @@
  *           description: "Thời gian khỏi hành"
  *           example: "2025-12-02T03:30:00.000Z"
  *         thoiGianBay:
- *           type: string
- *           example: "180"
- *         maHienThi:
- *           type: string
- *           example: "VN123"
+ *           type: integer
+ *           example: 180
+ *         slGheHang1:
+ *           type: integer
+ *           example: 14
+ *         slGheHang2:
+ *           type: integer
+ *           example: 86
  * 
  *     TaoChuyenBayDto:
  *       type: object
  *       required:
- *         - maMayBay
  *         - maSanBayDi
  *         - maSanBayDen
  *         - ngayGio
  *         - giaVe
  *         - thoiGianBay
- *         - maHienThi
+ *         - slGheHang1
+ *         - slGheHang2
  *       properties:
- *         maMayBay:
- *           type: integer
- *           example: 1
  *         maSanBayDi:
- *           type: integer
- *           example: 1
+ *           type: string
+ *           example: "SB001"
  *         maSanBayDen:
- *           type: integer
- *           example: 7
+ *           type: string
+ *           example: "SB002"
  *         giaVe:
  *           type: integer
  *           example: 1500000
@@ -200,25 +187,25 @@
  *           format: date-time
  *           example: "2025-12-02T03:30:00.000Z"
  *         thoiGianBay:
- *           type: string
- *           example: "180"
- *         maHienThi:
- *           type: string
- *           example: "VN123"
+ *           type: integer
+ *           example: 180
+ *         slGheHang1:
+ *           type: integer
+ *           example: 14
+ *         slGheHang2:
+ *           type: integer
+ *           example: 86
  * 
  * 
  *     CapNhatChuyenBayDto:
  *       type: object
  *       properties:
- *         maMayBay:
- *           type: integer
- *           example: 1
  *         maSanBayDi:
- *           type: integer
- *           example: 1
+ *           type: string
+ *           example: "SB001"
  *         maSanBayDen:
- *           type: integer
- *           example: 7
+ *           type: string
+ *           example: "SB002"
  *         giaVe:
  *           type: integer
  *           example: 1500000
@@ -227,11 +214,14 @@
  *           format: date-time
  *           example: "2025-12-02T03:30:00.000Z"
  *         thoiGianBay:
- *           type: string
- *           example: "180"
- *         maHienThi:
- *           type: string
- *           example: "VN123"
+ *           type: integer
+ *           example: 180
+ *         slGheHang1:
+ *           type: integer
+ *           example: 14
+ *         slGheHang2:
+ *           type: integer
+ *           example: 86
  */
 
 

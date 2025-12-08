@@ -1,60 +1,52 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
+import ChuyenBayBO from "./chuyen_bay.bo.js";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default class LichChuyenBayBO{
+export default class LichChuyenBayBO extends ChuyenBayBO{
     constructor({
-        MaChuyenBay=null,
-        MaSanBayDi=null,
-        MaSanBayDen=null,
-        QuocGiaSanBayDi=null,
-        QuocGiaSanBayDen=null,
-        TenSanBayDi=null,
-        TenSanBayDen=null,
-        MaMayBay=null,
-        LoaiMayBay=null,
+        MaCB=null,
+        MaSBDi=null,
+        MaSBDen=null,
         ThoiGianBay=null,
         SLGheHang1=null,
         SLGheHang2=null,
+        GiaVe=null,
+        NgayGio=null,
+        QuocGiaSBDi=null,
+        QuocGiaSBDen=null,
+        TenSBDi=null,
+        TenSBDen=null,
         SLGheHang1ConLai=null,
         SLGheHang2ConLai=null,
-        NgayGio=null,
-        MaHienThi=null,
-        GiaVe=null,
         GiaVeHang1=null,
         GiaVeHang2=null,
         SanBayTrungGian=[]
     }){
+        super({MaCB, MaSBDi, MaSBDen, NgayGio, ThoiGianBay, GiaVe, SLGheHang1, SLGheHang2});
         const thoiGianDi=dayjs(NgayGio);
         const thoiGianDen=thoiGianDi.add(ThoiGianBay,'m');
-        this.maChuyenBay=MaChuyenBay;
-        this.maSanBayDi=MaSanBayDi;
-        this.maSanBayDen=MaSanBayDen;
-        this.thoiGianBay=ThoiGianBay;
-        this.quocGiaSanBayDi=QuocGiaSanBayDi;
-        this.quocGiaSanBayDen=QuocGiaSanBayDen;
-        this.tenSanBayDi=TenSanBayDi;
-        this.tenSanBayDen=TenSanBayDen;
-        this.maMayBay=MaMayBay;
-        this.loaiMayBay=LoaiMayBay;
+        this.thoiGianBay=parseInt(ThoiGianBay);
+        this.quocGiaSanBayDi=QuocGiaSBDi;
+        this.quocGiaSanBayDen=QuocGiaSBDen;
+        this.tenSanBayDi=TenSBDi;
+        this.tenSanBayDen=TenSBDen;
         this.thoiGianDi=thoiGianDi.toISOString();
         this.thoiGianDen=thoiGianDen.toISOString();
-        this.slGheHang1=SLGheHang1;
-        this.slGheHang2=SLGheHang2;
-        this.slGheHang1ConLai=SLGheHang1ConLai;
-        this.slGheHang2ConLai=SLGheHang2ConLai;
-        this.ngayGio=NgayGio;
-        this.maHienThi=MaHienThi;
-        this.giaVe=GiaVe;
+        this.slGheHang1ConLai=parseInt(SLGheHang1ConLai);
+        this.slGheHang2ConLai=parseInt(SLGheHang2ConLai);
         this.giaVeHang1=GiaVeHang1;
         this.giaVeHang2=GiaVeHang2;
         this.sanBayTrungGian=SanBayTrungGian;
     }
     themSanBayTrungGian(maChuyenBay,sanBayTrungGian){
         if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
+        const thoiGianDi=dayjs(this.thoiGianDi);
+        const thoiGianDen=thoiGianDi.add(sanBayTrungGian.thoiGianDung,'m');
+        this.thoiGianDen=thoiGianDen;
         this.sanBayTrungGian.push(sanBayTrungGian);
     }
 }

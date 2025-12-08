@@ -2,7 +2,6 @@ import express from "express";
 import AuthRouter from "./modules/auth/auth.route.js";
 import ChuyenBayRouter from "./modules/chuyen_bay/chuyen_bay.route.js";
 import SanBayRouter from "./modules/san_bay/san_bay.route.js";
-import MayBayRouter from "./modules/may_bay/may_bay.route.js";
 import session from "express-session";
 import setupSwagger from "./docs/swagger.js";
 import HanhKhachRouter from "./modules/hanh_khach/hanh_khach.route.js";
@@ -30,7 +29,6 @@ app.use(
 app.use("/auth", AuthRouter);
 app.use("/chuyen-bay", ChuyenBayRouter);
 app.use("/san-bay", SanBayRouter);
-app.use("/may-bay", MayBayRouter);
 app.use("/hanh-khach", HanhKhachRouter);
 
 

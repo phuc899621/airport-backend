@@ -1,18 +1,16 @@
 import { errorHandler } from '../../core/errors/error_handler.js';
 
 import ChuyenBayRepo from './chuyen_bay.repo.js';
-import MayBayRepo from '../may_bay/may_bay.repo.js';
 import SanBayRepo from '../san_bay/san_bay.repo.js';
 import ChuyenBayService from './chuyen_bay.service.js';
 import db from '../../core/config/db.js';
 import SanBayTrungGianRepo from './san_bay_trung_gian.repo.js';
 
 const chuyenBayRepo=new ChuyenBayRepo(db);
-const mayBayRepo=new MayBayRepo(db);
 const sanBayRepo=new SanBayRepo(db);
 const sanBayTrungGianRepo=new SanBayTrungGianRepo(db);
 const chuyenBayService=new ChuyenBayService(
-    chuyenBayRepo,sanBayRepo,mayBayRepo,sanBayTrungGianRepo);
+    chuyenBayRepo,sanBayRepo,sanBayTrungGianRepo);
 
 export const layLichChuyenBay = async (req, res) => {
     try{
@@ -56,7 +54,7 @@ export const laySanBayTrungGian = async (req, res) => {
 export const taoSanBayTrungGian = async (req, res) => {
     try{
         const {maChuyenBay}=req.params;
-        const sanBayTrungGian=await chuyenBayService.taoSanBayTrungGian(maChuyenBay,req.body);
+        const sanBayTrungGian=await chuyenBayService.taoSanBayTrungGian({...req.body,maChuyenBay});
         res.status(201).json({
             success: true,
             message: "Tạo sân bay trung gian thành công!",

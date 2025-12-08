@@ -5,84 +5,78 @@ export default class ChuyenBayRepo{
     constructor(db){
         this.db=db;
     }
+    async layThoiGianBayToiThieu() {
+        try{
+            const executor = this.db;
+            const result = await executor`
+                SELECT "GiaTri" FROM "THAMSO" WHERE "TenThamSo" = 'ThoiGianBayToiThieu';
+            `;
+            return result[0]?.GiaTri?result[0].GiaTri:null;
+        } catch (err) {
+            throw new DBError(err.message);
+        }
+    }
 
     async layLichChuyenBay(query,tx) {
         try {
             const executor = tx || this.db;
-            const { maChuyenBay, tenSanBayDi, tenSanbayDen, ngayGio, maHienThi,
-                 maMayBay, loaiMayBay, maSanBayDi, maSanBayDen } = query;
+            const { tenSanBayDi, tenSanbayDen, 
+                  maSanBayDi, maSanBayDen } = query;
             const result = await executor`
                 SELECT 
-                    cb."MaChuyenBay",
-                    sbDi."MaSanBay" AS "MaSanBayDi",
-                    sbDen."MaSanBay" AS "MaSanBayDen",
-                    sbDi."TenSanBay" AS "TenSanBayDi", 
-                    sbDen."TenSanBay" AS "TenSanBayDen",
-                    sbDi."QuocGia" AS "QuocGiaSanBayDi",
-                    sbDen."QuocGia" AS "QuocGiaSanBayDen",
-                    cb."MaMayBay",
-                    mb."LoaiMayBay",
+                    cb."MaCB",
+                    cb."MaSBDi" ,
+                    cb."MaSBDen",
+                    sbDi."TenSB" AS "TenSBDi", 
+                    sbDen."TenSB" AS "TenSBDen",
+                    sbDi."QuocGia" AS "QuocGiaSBDi",
+                    sbDen."QuocGia" AS "QuocGiaSBDen",
                     cb."ThoiGianBay",
-                    mb."SLGheHang1",
-                    mb."SLGheHang2",
-                    cb."ThoiGianBay",
+                    cb."SLGheHang1",
+                    cb."SLGheHang2",
                     cb."NgayGio",
-                    cb."MaHienThi",
                     cb."GiaVe",
+
                     ROUND(cb."GiaVe" * hv1."HeSoGia") AS "GiaVeHang1",
                     ROUND(cb."GiaVe" * hv2."HeSoGia") AS "GiaVeHang2",
-                    sbtg."MaSanBay" ,
-                    sb."TenSanBay",
+
+                    sbtg."MaSB" ,
+                    sb."TenSB",
                     sb."QuocGia",
                     sbtg."ThuTuDung",
                     sbtg."ThoiGianDung",
                     sbtg."GhiChu",
-                    (mb."SLGheHang1" - COALESCE(d1."DatChoConHieuLuc",0)) AS "SLGheHang1ConLai",
-                    (mb."SLGheHang2" - COALESCE(d2."DatChoConHieuLuc",0)) AS "SLGheHang2ConLai"
+                    (cb."SLGheHang1" - COALESCE(d1."DatChoConHieuLuc",0)) AS "SLGheHang1ConLai",
+                    (cb."SLGheHang2" - COALESCE(d2."DatChoConHieuLuc",0)) AS "SLGheHang2ConLai"
                 FROM "CHUYENBAY" cb
-                LEFT JOIN "MAYBAY" mb 
-                    ON cb."MaMayBay" = mb."MaMayBay"
                 LEFT JOIN "SANBAY" AS sbDi
-                    ON cb."MaSanBayDi" = sbDi."MaSanBay"
+                    ON cb."MaSBDi" = sbDi."MaSB"
                 LEFT JOIN "SANBAY" AS sbDen
-                    ON cb."MaSanBayDen" = sbDen."MaSanBay"
+                    ON cb."MaSBDen" = sbDen."MaSB"
                 LEFT JOIN "SANBAYTRUNGGIAN" sbtg
-                    ON sbtg."MaChuyenBay" = cb."MaChuyenBay"
-                LEFT JOIN "SANBAY" as sb
-                    ON sbtg."MaSanBay" = sb."MaSanBay"
-                LEFT JOIN "HANGVE" hv1
-                    ON hv1."MaHangVe" = 1
-                LEFT JOIN "HANGVE" hv2
-                    ON hv2."MaHangVe" = 2
+                    ON sbtg."MaCB" = cb."MaCB"
+                LEFT JOIN "SANBAY" sb
+                    ON sb."MaSB"=sbtg."MaSB"
                 LEFT JOIN (
-                    SELECT p."MaChuyenBay", COUNT(*) AS "DatChoConHieuLuc"
-                    FROM "PHIEUDATCHO" p
-                    JOIN "LOAITRANGTHAIPHIEU" t
-                        ON p."MaLoaiTrangThaiPhieu" = t."MaLoaiTrangThaiPhieu"
-                    WHERE t."TenLoaiTrangThaiPhieu" <> 'da_huy'
-                    AND p."MaHangVe" = 1
-                    GROUP BY p."MaChuyenBay"
-                ) d1 ON d1."MaChuyenBay" = cb."MaChuyenBay"
+                    SELECT "MaCB", COUNT(*) AS "DatChoConHieuLuc"
+                    FROM "VECHUYENBAY" 
+                    WHERE "TrangThai" <> 'da_huy' AND "MaHV"='HV001'
+                    GROUP BY "MaCB"
+                ) d1 ON d1."MaCB" = cb."MaCB"
 
                 LEFT JOIN (
-                    SELECT p."MaChuyenBay", COUNT(*) AS "DatChoConHieuLuc"
-                    FROM "PHIEUDATCHO" p
-                    JOIN "LOAITRANGTHAIPHIEU" t
-                        ON p."MaLoaiTrangThaiPhieu" = t."MaLoaiTrangThaiPhieu"
-                    WHERE t."TenLoaiTrangThaiPhieu" <> 'da_huy'
-                    AND p."MaHangVe" = 2
-                    GROUP BY p."MaChuyenBay"
-                ) d2 ON d2."MaChuyenBay" = cb."MaChuyenBay"
-                WHERE 1=1 
-                ${maChuyenBay?executor`AND cb."MaChuyenBay" = ${maChuyenBay}`:executor``}
-                ${tenSanBayDi?executor`AND sbDi."TenSanBay" ILIKE ${'%' + String(tenSanBayDi)+'%'}`:executor``}
-                ${tenSanbayDen?executor`AND sbDen."TenSanBay" ILIKE ${'%' + String(tenSanbayDen)+'%'}`:executor``}
-                ${loaiMayBay?executor`AND mb."LoaiMayBay" ILIKE ${String(loaiMayBay)}`:executor``}
-                ${ngayGio?executor`AND cb."NgayGio" = ${ngayGio}`:executor``}
-                ${maHienThi?executor`AND cb."MaHienThi" ILIKE ${String(maHienThi)}`:executor``}
-                ${maMayBay?executor`AND cb."MaMayBay" = ${maMayBay}`:executor``}
-                ${maSanBayDi?executor`AND sbDi."MaSanBay" = ${maSanBayDi}`:executor``}
-                ${maSanBayDen?executor`AND cbDen."MaSanBay" = ${maSanBayDen}`:executor``}
+                    SELECT "MaCB", COUNT(*) AS "DatChoConHieuLuc"
+                    FROM "VECHUYENBAY" 
+                    WHERE "TrangThai" <> 'da_huy' AND "MaHV"='HV002'
+                    GROUP BY "MaCB"
+                ) d2 ON d2."MaCB" = cb."MaCB"
+                LEFT JOIN "HANGVE" hv1 ON hv1."MaHV" = 'HV001'
+                LEFT JOIN "HANGVE" hv2 oN hv2."MaHV"='HV002'
+                WHERE 1=1
+                ${maSanBayDi ? executor`AND cb."MaSBDi" = ${maSanBayDi}` : executor``}
+                ${maSanBayDen ? executor`AND cb."MaSBDen" = ${maSanBayDen}` : executor``}
+                ${tenSanBayDi ? executor`AND sbDi."TenSB" ILIKE ${'%'+ tenSanBayDi+'%'}` : executor``}
+                ${tenSanbayDen ? executor`AND sbDen."TenSB" ILIKE ${'%'+tenSanbayDen +'%'}` : executor``}
                 ORDER BY cb."NgayGio" ASC, sbtg."ThuTuDung" ASC;
             `;
             return result;
@@ -93,15 +87,76 @@ export default class ChuyenBayRepo{
     async taoChuyenBay(data,tx)  {
         try {
             const executor = tx || this.db;
-            const { maMayBay, maSanBayDi, maSanBayDen, ngayGio, 
-                maHienThi, giaVe, thoiGianBay } = data;
+            const { maSanBayDi, maSanBayDen, ngayGio, slGheHang1, slGheHang2,
+                giaVe, thoiGianBay } = data;
             const rows= await executor`
-                INSERT INTO "CHUYENBAY" ("MaMayBay","MaSanBayDi",
-                    "MaSanBayDen","NgayGio","MaHienThi","GiaVe","ThoiGianBay")
-                VALUES (${maMayBay},${maSanBayDi},${maSanBayDen},${ngayGio},${maHienThi},${giaVe},${thoiGianBay})
+                INSERT INTO "CHUYENBAY" ("MaSBDi",
+                    "MaSBDen","NgayGio","GiaVe","ThoiGianBay","SLGheHang1","SLGheHang2")
+                VALUES (${maSanBayDi}, ${maSanBayDen}, ${ngayGio}, ${giaVe}, ${thoiGianBay}, ${slGheHang1}, ${slGheHang2})
                 RETURNING *;
             `;
-            return rows[0];
+            return rows[0]||null;
+        } catch (err) {
+            throw new DBError(err.message);
+        }
+    }
+    async layLichChuyenBayTheoMaChuyenBay(maChuyenBay, tx) {
+        try {
+            const executor = tx || this.db;
+            const result = await executor`
+                SELECT 
+                    cb."MaCB",
+                    cb."MaSBDi" ,
+                    cb."MaSBDen",
+                    sbDi."TenSB" AS "TenSBDi", 
+                    sbDen."TenSB" AS "TenSBDen",
+                    sbDi."QuocGia" AS "QuocGiaSBDi",
+                    sbDen."QuocGia" AS "QuocGiaSBDen",
+                    cb."ThoiGianBay",
+                    cb."SLGheHang1",
+                    cb."SLGheHang2",
+                    cb."NgayGio",
+                    cb."GiaVe",
+
+                    ROUND(cb."GiaVe" * hv1."HeSoGia") AS "GiaVeHang1",
+                    ROUND(cb."GiaVe" * hv2."HeSoGia") AS "GiaVeHang2",
+
+                    sbtg."MaSB" ,
+                    sb."TenSB",
+                    sb."QuocGia",
+                    sbtg."ThuTuDung",
+                    sbtg."ThoiGianDung",
+                    sbtg."GhiChu",
+                    (cb."SLGheHang1" - COALESCE(d1."DatChoConHieuLuc",0)) AS "SLGheHang1ConLai",
+                    (cb."SLGheHang2" - COALESCE(d2."DatChoConHieuLuc",0)) AS "SLGheHang2ConLai"
+                FROM "CHUYENBAY" cb
+                LEFT JOIN "SANBAY" AS sbDi
+                    ON cb."MaSBDi" = sbDi."MaSB"
+                LEFT JOIN "SANBAY" AS sbDen
+                    ON cb."MaSBDen" = sbDen."MaSB"
+                LEFT JOIN "SANBAYTRUNGGIAN" sbtg
+                    ON sbtg."MaCB" = cb."MaCB"
+                LEFT JOIN "SANBAY" sb
+                    ON sb."MaSB"=sbtg."MaSB"
+                LEFT JOIN (
+                    SELECT "MaCB", COUNT(*) AS "DatChoConHieuLuc"
+                    FROM "VECHUYENBAY" 
+                    WHERE "TrangThai" <> 'da_huy' AND "MaHV"='HV001'
+                    GROUP BY "MaCB"
+                ) d1 ON d1."MaCB" = cb."MaCB"
+
+                LEFT JOIN (
+                    SELECT "MaCB", COUNT(*) AS "DatChoConHieuLuc"
+                    FROM "VECHUYENBAY" 
+                    WHERE "TrangThai" <> 'da_huy' AND "MaHV"='HV002'
+                    GROUP BY "MaCB"
+                ) d2 ON d2."MaCB" = cb."MaCB"
+                LEFT JOIN "HANGVE" hv1 ON hv1."MaHV" = 'HV001'
+                LEFT JOIN "HANGVE" hv2 oN hv2."MaHV"='HV002'
+                WHERE cb."MaCB" = ${maChuyenBay}
+                ORDER BY cb."NgayGio" ASC, sbtg."ThuTuDung" ASC;
+            `;
+            return result[0] || null;
         } catch (err) {
             throw new DBError(err.message);
         }
@@ -110,69 +165,9 @@ export default class ChuyenBayRepo{
         try {
             const executor = tx || this.db;
             const result = await executor`
-                SELECT 
-                    cb."MaChuyenBay",
-                    sbDi."MaSanBay" AS "MaSanBayDi",
-                    sbDen."MaSanBay" AS "MaSanBayDen",
-                    sbDi."TenSanBay" AS "TenSanBayDi", 
-                    sbDen."TenSanBay" AS "TenSanBayDen",
-                    sbDi."QuocGia" AS "QuocGiaSanBayDi",
-                    sbDen."QuocGia" AS "QuocGiaSanBayDen",
-                    cb."MaMayBay",
-                    mb."LoaiMayBay",
-                    cb."ThoiGianBay",
-                    mb."SLGheHang1",
-                    mb."SLGheHang2",
-                    cb."ThoiGianBay",
-                    cb."NgayGio",
-                    cb."MaHienThi",
-                    cb."GiaVe",
-                    ROUND(cb."GiaVe" * hv1."HeSoGia") AS "GiaVeHang1",
-                    ROUND(cb."GiaVe" * hv2."HeSoGia") AS "GiaVeHang2",
-                    sbtg."MaSanBay" ,
-                    sb."TenSanBay",
-                    sb."QuocGia",
-                    sbtg."ThuTuDung",
-                    sbtg."ThoiGianDung",
-                    sbtg."GhiChu",
-                    (mb."SLGheHang1" - COALESCE(d1."DatChoConHieuLuc",0)) AS "SLGheHang1ConLai",
-                    (mb."SLGheHang2" - COALESCE(d2."DatChoConHieuLuc",0)) AS "SLGheHang2ConLai"
-                FROM "CHUYENBAY" cb
-                LEFT JOIN "MAYBAY" mb 
-                    ON cb."MaMayBay" = mb."MaMayBay"
-                LEFT JOIN "SANBAY" AS sbDi
-                    ON cb."MaSanBayDi" = sbDi."MaSanBay"
-                LEFT JOIN "SANBAY" AS sbDen
-                    ON cb."MaSanBayDen" = sbDen."MaSanBay"
-                LEFT JOIN "SANBAYTRUNGGIAN" sbtg
-                    ON sbtg."MaChuyenBay" = cb."MaChuyenBay"
-                LEFT JOIN "SANBAY" as sb
-                    ON sbtg."MaSanBay" = sb."MaSanBay"
-                LEFT JOIN "HANGVE" hv1
-                    ON hv1."MaHangVe" = 1
-                LEFT JOIN "HANGVE" hv2
-                    ON hv2."MaHangVe" = 2
-                LEFT JOIN (
-                    SELECT p."MaChuyenBay", COUNT(*) AS "DatChoConHieuLuc"
-                    FROM "PHIEUDATCHO" p
-                    JOIN "LOAITRANGTHAIPHIEU" t
-                        ON p."MaLoaiTrangThaiPhieu" = t."MaLoaiTrangThaiPhieu"
-                    WHERE t."TenLoaiTrangThaiPhieu" <> 'da_huy'
-                    AND p."MaHangVe" = 1
-                    GROUP BY p."MaChuyenBay"
-                ) d1 ON d1."MaChuyenBay" = cb."MaChuyenBay"
-
-                LEFT JOIN (
-                    SELECT p."MaChuyenBay", COUNT(*) AS "DatChoConHieuLuc"
-                    FROM "PHIEUDATCHO" p
-                    JOIN "LOAITRANGTHAIPHIEU" t
-                        ON p."MaLoaiTrangThaiPhieu" = t."MaLoaiTrangThaiPhieu"
-                    WHERE t."TenLoaiTrangThaiPhieu" <> 'da_huy'
-                    AND p."MaHangVe" = 2
-                    GROUP BY p."MaChuyenBay"
-                ) d2 ON d2."MaChuyenBay" = cb."MaChuyenBay"
-                WHERE cb."MaChuyenBay" = ${maChuyenBay}
-                ORDER BY cb."NgayGio" ASC, sbtg."ThuTuDung" ASC;
+                SELECT *
+                FROM "CHUYENBAY"
+                WHERE "MaCB" = ${maChuyenBay};
             `;
             return result[0] || null;
         } catch (err) {
@@ -186,10 +181,10 @@ export default class ChuyenBayRepo{
             const rows = await executor`
                 UPDATE "CHUYENBAY"
                 SET ${executor(data, columns)}
-                WHERE "MaChuyenBay" = ${maChuyenBay}
+                WHERE "MaCB" = ${maChuyenBay}
                 RETURNING *;
             `;
-            return rows[0];
+            return rows[0]||null;
         } catch (err) {
             throw new DBError(err.message);
         }
@@ -199,7 +194,7 @@ export default class ChuyenBayRepo{
             const executor = tx || this.db;
             return await executor`
                 DELETE FROM "CHUYENBAY"
-                WHERE "MaChuyenBay" = ${maChuyenBay}
+                WHERE "MaCB" = ${maChuyenBay}
                 RETURNING *;
             `;
         } catch (err) {

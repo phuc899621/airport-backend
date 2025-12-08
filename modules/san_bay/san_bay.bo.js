@@ -1,7 +1,7 @@
 export default class SanBayBO{
-    constructor({ MaSanBay=null, TenSanBay=null, QuocGia=null }={}) {
-        this.maSanBay = MaSanBay;
-        this.tenSanBay = TenSanBay;
+    constructor({ MaSB=null, TenSB=null, QuocGia=null }={}) {
+        this.maSanBay = MaSB;
+        this.tenSanBay = TenSB;
         this.quocGia = QuocGia;
     }
 }

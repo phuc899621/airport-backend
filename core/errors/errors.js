@@ -15,11 +15,6 @@ export class BaseError extends Error {
   }
 }
 
-export class HTTPError extends BaseError {
-    constructor(status, type, detail) {
-        super({status, type, detail});
-    }
-}
 
 export class DBError extends BaseError {
     constructor(detail) {

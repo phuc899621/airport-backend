@@ -1,9 +1,10 @@
 export default class SanBayTrungGianBO {
-    constructor({MaSanBay=null, ThoiGianDung=null,
-        ThuTuDung=null,MaChuyenBay=null,
+
+    constructor({MaSB=null, ThoiGianDung=null,
+        ThuTuDung=null,MaCB=null,
         GhiChu=null}) {
-        this.maChuyenBay = MaChuyenBay;
-        this.maSanBay = MaSanBay;
+        this.maChuyenBay = MaCB;
+        this.maSanBay = MaSB;
         this.thoiGianDung = ThoiGianDung;
         this.thuTuDung = ThuTuDung;
         this.ghiChu = GhiChu;

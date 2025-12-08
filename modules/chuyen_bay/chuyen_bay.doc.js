@@ -8,8 +8,8 @@
  *     summary: Lấy lịch các chuyến bay
  *     description: | 
  *         Trả về danh sách lịch chuyến bay theo sân bay đi, sân bay đến và ngày.
- *         Có thể lọc theo mã sân bay đi và đến, mã máy bay, ngày giờ bay, 
- *         tên sân bay đi và đến, loại máy bay, mã chuyến bay hiển thị
+ *         Có thể lọc theo mã sân bay đi và đến, mã máy bay,  
+ *         tên sân bay đi và đến
  *     parameters:
  *       - in: query
  *         name: maSanBayDi
@@ -24,18 +24,6 @@
  *         description: Lọc theo mã sân bay đến
  *         example: 7
  *       - in: query
- *         name: maMayBay
- *         schema:
- *           type: integer
- *         description: Lọc theo máy bay
- *         example: 1
- *       - in: query
- *         name: loaiMayBay
- *         schema:
- *           type: string
- *         description: Lọc theo loại máy bay
- *         example: Boeing 747
- *       - in: query
  *         name: tenSanBayDi
  *         schema:
  *           type: string
@@ -47,20 +35,6 @@
  *           type: string
  *         description: Lọc theo tên sân bay đến
  *         example: Sân bay Hà Nội
- *       - in: query
- *         name: maHienThi
- *         schema:
- *           type: string
- *         description: Lọc theo mã chuyến bay hiển thị
- *         example: VN123
- *       - in: query
- *         name: ngayGio
- *         schema:
- *           type: string
- *           format: date-time
- *         description: Lọc theo thời gian khởi hành
- *         example: "2025-12-01T11:40:52.000Z"
- *
  *     responses:
  *       200:
  *         description: Lấy lịch chuyến bay thành công
@@ -221,9 +195,8 @@
  * /chuyen-bay:
  *   post:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay 
  *     summary: Tạo chuyến bay mới
- *     description: API dùng để tạo một chuyến bay mới.
  *     requestBody:
  *       required: true
  *       content:
@@ -258,16 +231,16 @@
  * /chuyen-bay/{maChuyenBay}/san-bay:
  *   post:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay
  *     summary: Thêm sân bay trung gian cho chuyến bay cụ thể
  *     parameters:
  *       - in: path
  *         name: maChuyenBay
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Mã chuyến bay
- *         example: 1
+ *         example: CB001
  *     requestBody:
  *       required: true
  *       content:
@@ -284,7 +257,7 @@
  *                 description: Mã sân bay
  *               thoiGianDung:
  *                 type: integer
- *                 example: 20
+ *                 example: 16
  *                 description: Thời gian dừng (tính bằng phút) nằm trong 10-20phút
  *               ghiChu:
  *                 type: string
@@ -319,7 +292,7 @@
  * /chuyen-bay/{maChuyenBay}:
  *   patch:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay 
  *     summary: Cập nhật thông tin chuyến bay
  *     description: API cập nhật thông tin chi tiết của một chuyến bay.
  *     parameters:
@@ -365,7 +338,7 @@
  * /chuyen-bay/{maChuyenBay}/san-bay/{maSanBay}:
  *   patch:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay 
  *     summary: Cập nhật sân bay trung gian cho chuyến bay
  *     parameters:
  *       - in: path
@@ -425,7 +398,7 @@
  * /chuyen-bay/{maChuyenBay}:
  *   delete:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay
  *     summary: Xóa chuyến bay
  *     description: API xóa một chuyến bay theo mã chuyến bay.
  *     parameters:
@@ -465,7 +438,7 @@
  * /chuyen-bay/{maChuyenBay}/san-bay/{maSanBay}:
  *   delete:
  *     tags:
- *       - ChuyenBay [Admin]
+ *       - ChuyenBay 
  *     summary: Xóa sân bay trung gian
  *     parameters:
  *       - in: path

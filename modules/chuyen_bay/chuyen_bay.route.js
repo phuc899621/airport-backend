@@ -9,6 +9,7 @@ const router = express.Router();
 router.get("/",validate(ChuyenBayValidator.layLichChuyenBayQuerySchema,ValidateOption.QUERY),ChuyenBayController.layLichChuyenBay); 
 router.get("/:maChuyenBay", validate(ChuyenBayValidator.layChuyenBayParamsSchema,ValidateOption.PARAMS),ChuyenBayController.layChuyenBay);
 router.get("/:maChuyenBay/san-bay", validate(ChuyenBayValidator.layDanhSachSanBayTrungGianParamsSchema,ValidateOption.PARAMS),ChuyenBayController.laySanBayTrungGian);
+router.get("/:maChuyenBay/san-bay/:maSanBay", validate(ChuyenBayValidator.laySanBayTrungGianParamsSchema,ValidateOption.PARAMS),ChuyenBayController.laySanBayTrungGian);
 
 router.post("/", 
     validate(ChuyenBayValidator.taoChuyenBayBodySchema),ChuyenBayController.taoChuyenBay);

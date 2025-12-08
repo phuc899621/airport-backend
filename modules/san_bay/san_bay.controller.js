@@ -22,20 +22,23 @@ export const taoSanBay = async (req, res, next) => {
 export const laySanBay=async(req,res,next)=>{
     try {
         const {maSanBay}=req.params;
-        const {tenSanBay,quocGia}=req.query;
-        const sanBay=await sanBayService.laySanBay({maSanBay,tenSanBay, quocGia});
-        if(!sanBay) {
-            res.status(200).json({
-                success: true,
-                message: `Không tìm thấy sân bay có mã ${maSanBay}!`,
-                data: sanBay
-            }); 
-            return;
-        }
+        const sanBay=await sanBayService.laySanBay(maSanBay,req.query);
         res.status(200).json({
             success: true,
             message: "Lấy sân bay thành công!",
             data: sanBay
+        }); 
+    } catch (err) {
+        errorHandler(res, err);
+    }
+}
+export const layCountSanBay=async(req,res,next)=>{
+    try {
+        const sanBay=await sanBayService.laySanBay(req.params.maSanBay,req.query);
+        res.status(200).json({
+            success: true,
+            message: "Lấy số lượng sân bay theo tiêu chí thành công!",
+            data: sanBay.length
         }); 
     } catch (err) {
         errorHandler(res, err);

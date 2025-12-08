@@ -15,6 +15,7 @@ export function validate(schema, option=ValidateOption.BODY) {
     console.log(error,value);
     if (error) {
       errorHandler(res, new ValidationError(error.details[0].message));
+      return;
     }
 
     if (!req.validated) req.validated = {};

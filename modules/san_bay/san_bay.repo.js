@@ -10,12 +10,12 @@ export default class SanBayRepo {
         try {
             const executor = tx || this.db;
             const rows = await executor`
-                INSERT INTO "SANBAY" ("TenSanBay", "QuocGia")
+                INSERT INTO "SANBAY" ("TenSB", "QuocGia")
                 VALUES (${tenSanBay}, ${quocGia})
                 RETURNING *;
             `;
             console.log("SanBay vua tao",rows)
-            return rows[0];
+            return rows[0]??null;
         } catch (err) {
             throw new DBError(err.message);
         }
@@ -27,7 +27,8 @@ export default class SanBayRepo {
             const executor = tx || this.db;
             const rows = await executor`
                 SELECT * FROM "SANBAY"
-                WHERE "MaSanBay" = ${maSanBay}
+                WHERE "MaSB" = ${maSanBay}
+                AND "DaXoa" = false
                 LIMIT 1;
             `;
             return rows[0] || null;
@@ -35,60 +36,38 @@ export default class SanBayRepo {
             throw new DBError(err.message);
         }
     }
-    async laySanBayTheoTenSanBay(tenSanBay, tx) {
+
+    async laySanBay(filter={}, tx) {
         try{
             const executor = tx || this.db;
+            const {tenSanBay, quocGia} = filter;
             return await executor`
                 SELECT * FROM "SANBAY"
-                WHERE "TenSanBay" ILIKE '%' || ${tenSanBay} || '%'
-                ORDER BY "TenSanBay" ASC;
+                WHERE 1=1
+                ${tenSanBay ? executor`AND "TenSB" ILIKE ${'%' + tenSanBay+'%'}`:executor``}
+                ${quocGia ? executor`AND "QuocGia" ILIKE ${'%' + quocGia+'%'}`:executor``}
+                AND "DaXoa" = false
+                ORDER BY "MaSB";
             `;
         } catch (err) {
             throw new DBError(err.message);
         }
     }
 
-    async laySanBayTheoQuocGia(quocGia, tx) {
-        try{
-            const executor = tx || this.db;
-            return await executor`
-                SELECT * FROM "SANBAY"
-                WHERE "QuocGia" ILIKE '%' || ${quocGia} || '%'
-                ORDER BY "QuocGia" ASC;
-            `;
-            
-        }catch (err) {
-            throw new DBError(err.message);
-        }
-    }
+   
 
-    async layTatCaSanBay(tx) {
+
+    async capNhatSanBay(maSanBay, data, tx) {
         try {
             const executor = tx || this.db;
-            return await executor`
-                SELECT * FROM "SANBAY"
-                ORDER BY "QuocGia" ASC, "MaSanBay" ASC;
-            `;
-        } catch (err) {
-            throw new DBError(err.message);
-        }
-    }
-
-
-    async capNhatSanBay(maSanBay, {field, value}, tx) {
-        try {
-            const executor = tx || this.db;
-
-            const columnName = executor.unsafe(`"${field}"`);
-
+            const columns = Object.keys(data);
             const rows= await executor`
                 UPDATE "SANBAY"
-                SET ${columnName} = ${value}
-                WHERE "MaSanBay" = ${maSanBay}
+                SET ${executor(data, columns)}
+                WHERE "MaSB" = ${maSanBay}
                 RETURNING *;
             `;
-
-            return rows[0];
+            return rows[0] || null;
         } catch (err) {
             throw new DBError(err.message);
         }
@@ -100,10 +79,11 @@ export default class SanBayRepo {
             const executor = tx || this.db;
 
             await executor`
-                DELETE FROM "SANBAY"
-                WHERE "MaSanBay" = ${maSanBay};
+                UPDATE "SANBAY"
+                SET "DaXoa" = true
+                WHERE "MaSB" = ${maSanBay};
             `;
-            return true;
+            return;
         } catch (err) {
             throw new DBError(err.message);
         }

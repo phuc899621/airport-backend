@@ -8,6 +8,7 @@ import ValidateOption from "../../middlewares/base.validator.option.js";
 const router = express.Router();
 
 router.get("/", validate(SanBayValidator.laySanBayQuerySchema,ValidateOption.QUERY),SanBayController.laySanBay); 
+router.get("/count", validate(SanBayValidator.laySanBayQuerySchema,ValidateOption.QUERY),SanBayController.layCountSanBay);
 router.get("/:maSanBay", validate(SanBayValidator.laySanBayParamsSchema,ValidateOption.PARAMS),SanBayController.laySanBay);
 router.post("/", validate(SanBayValidator.taoSanBayBodySchema),SanBayController.taoSanBay); 
 router.patch("/:maSanBay",
