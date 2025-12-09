@@ -16,13 +16,20 @@ export default class HanhKhachService {
     async taoHanhKhach(data){
         if(data.cmnd&&(await this.repo.layHanhKhachTheoCMND(data.cmnd))) throw new ValidationError("CMND đã tồn tại");
         if(data.email&&(await this.repo.layHanhKhachTheoEmail(data.email))) throw new ValidationError("Email đã tồn tại");
+        data.maHanhKhach=await this.taoMaHK();
         const hanhKhachRaw=await this.repo.taoHanhKhach(data);
-        return new HanhKhachBO(hanhKhachRaw);
+        return hanhKhachRaw? new HanhKhachBO(hanhKhachRaw):null;
     }
     async xoaHanhKhach(maHanhKhach){
         if(maHanhKhach && !(await this.repo.layHanhKhachTheoMaHanhKhach(maHanhKhach))) throw new ValidationError("Không tìm thấy hành khách");
         const hanhKhachRaw=await this.repo.xoaHanhKhach(maHanhKhach);
         return new HanhKhachBO(hanhKhachRaw);
+    }
+    async taoMaHK(){
+        const next_id=await this.repo.laySTTHanhKhachTiepTheo();
+        console.log(next_id);
+        if(!next_id) throw new ServerError("Không thể tạo mã hành khách");
+        return `HK${String(next_id).padStart(3, '0')}`;
     }
 
 }

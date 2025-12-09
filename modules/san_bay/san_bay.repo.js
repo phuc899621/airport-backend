@@ -4,18 +4,24 @@ export default class SanBayRepo {
     constructor(db) {
         this.db = db;
     }
-
+    async laySTTSanBayTiepTheo(){
+        const rows= await this.db`
+            SELECT nextval('sanbay_seq') as next_id;
+        `;
+        console.log(rows);
+        return rows[0]?.next_id;
+    }
     
-    async taoSanBay({ tenSanBay, quocGia }, tx) {
+    async taoSanBay({ maSanBay, tenSanBay, quocGia }, tx) {
         try {
             const executor = tx || this.db;
             const rows = await executor`
-                INSERT INTO "SANBAY" ("TenSB", "QuocGia")
-                VALUES (${tenSanBay}, ${quocGia})
+                INSERT INTO "SANBAY" ("MaSB","TenSB", "QuocGia")
+                VALUES (${maSanBay},${tenSanBay}, ${quocGia})
                 RETURNING *;
             `;
             console.log("SanBay vua tao",rows)
-            return rows[0]??null;
+            return rows[0]||null;
         } catch (err) {
             throw new DBError(err.message);
         }
@@ -53,9 +59,6 @@ export default class SanBayRepo {
             throw new DBError(err.message);
         }
     }
-
-   
-
 
     async capNhatSanBay(maSanBay, data, tx) {
         try {

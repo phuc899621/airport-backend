@@ -2,6 +2,13 @@ export default class HanhKhachRepo {
     constructor(db) {
         this.db = db;
     }
+    async laySTTHanhKhachTiepTheo(){
+        const rows= await this.db`
+            SELECT nextval('hanhkhach_seq') as next_id;
+        `;
+        console.log(rows);
+        return rows[0]?.next_id;
+    }
     async layHanhKhach(filter={},tx){
         const executor = tx || this.db;
         const { maHanhKhach, hoTen, cmnd, dienThoai, email} = filter;
@@ -54,13 +61,13 @@ export default class HanhKhachRepo {
         return rows[0] || null;
     }
     async taoHanhKhach(data, tx) {
-        const { cmnd, email, dienThoai, hoTen } = data;
+        const {maHanhKhach ,cmnd, email, dienThoai, hoTen } = data;
         const executor = tx || this.db;
         const rows = await executor`
-            INSERT INTO "HANHKHACH" ("HoTen", "CMND","Email","DienThoai")
-            VALUES (${hoTen}, ${cmnd}, ${email}, ${dienThoai}) RETURNING *;
+            INSERT INTO "HANHKHACH" ("MaHK","HoTen", "CMND","Email","DienThoai")
+            VALUES (${maHanhKhach},${hoTen}, ${cmnd}, ${email}, ${dienThoai}) RETURNING *;
         `;
-        return rows[0];
+        return rows[0]??null;
     }
     async xoaHanhKhach(maHanhKhach, tx){
         const executor = tx || this.db;

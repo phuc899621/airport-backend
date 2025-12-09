@@ -30,6 +30,10 @@ export const  taoHanhKhachBodySchema = Joi.object({
         "string.length": "Số điện thoại phải có 10 số",
         "any.required": "Vui lòng cung cấp số điện thoại",
     }),
+    email: Joi.string().email().optional().messages({
+        "string.base": "Email phải là chuỗi",
+        "string.email": "Email không hợp lệ",
+    })
 
 })
 

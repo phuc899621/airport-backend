@@ -7,7 +7,8 @@ export default class SanBayService{
         this.repo=sanBayRepo
     }
     async taoSanBay({ tenSanBay, quocGia }) {
-        const sanBayRaw = await this.repo.taoSanBay({ tenSanBay, quocGia });
+        const maSanBay = await this.repo.laySTTSanBayTiepTheo();
+        const sanBayRaw = await this.repo.taoSanBay({ maSanBay, tenSanBay, quocGia });
         return sanBayRaw? new SanBayBO(sanBayRaw):null;
     }
 
@@ -38,6 +39,12 @@ export default class SanBayService{
     async xoaSanBay(maSanBay) {
         if(maSanBay&&!(await this.repo.laySanBayTheoMaSanBay(maSanBay))) throw new NotFoundError("Sân bay không tồn tại");
         await this.repo.xoaSanBay(maSanBay);
+    }
+    async taoMaSB(){
+        const next_id=await this.repo.laySTTSanBayTiepTheo();
+        console.log(next_id);
+        if(!next_id) throw new ServerError("Không thể tạo mã sân bay");
+        return `SB${String(next_id).padStart(3, '0')}`;
     }
 
 }
