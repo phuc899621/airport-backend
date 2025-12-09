@@ -1,4 +1,4 @@
-import { ConflictError, NotFoundError, ValidationError } from "../../core/errors/errors.js";
+import { ConflictError, NotFoundError, ServerError, ValidationError } from "../../core/errors/errors.js";
 import ChuyenBayBO from "./chuyen_bay.bo.js";
 import LichChuyenBayBO from "./lich_chuyen_bay.bo.js";
 import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
@@ -37,6 +37,8 @@ export default class ChuyenBayService{
         const thoiGianBayToiThieu = await this.repo.layThoiGianBayToiThieu();
         if(!thoiGianBayToiThieu) throw new ValidationError("Không kiểm tra được thời gian bay");
         if(thoiGianBay<thoiGianBayToiThieu) throw new ValidationError(`Thời gian bay phải lớn hơn ${thoiGianBayToiThieu} phút`);
+        data.maChuyenBay=await this.taoMaCB();
+        if(await this.repo.layChuyenBayTheoMaChuyenBay(data.maChuyenBay)) throw new ConflictError("Mã chuyển bay tạo bị trùng");
         const result=  await this.repo.taoChuyenBay(data);
         return result? new ChuyenBayBO(result):null;
     }
@@ -148,5 +150,13 @@ export default class ChuyenBayService{
     async xoaSanBayTrungGian(maChuyenBay,maSanBay){
         if(!(await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay))) throw new NotFoundError("Sân bay trung gian không tồn tại");
         this.sanBayTrungGianRepo.xoaSanBayTrungGian(maChuyenBay,maSanBay);
+    }
+
+
+    async taoMaCB(){
+        const next_id=await this.repo.laySTTChuyenBayTiepTheo();
+        console.log(next_id);
+        if(!next_id) throw new ServerError("Không thể tạo mã chuyển bay");
+        return `CB${String(next_id).padStart(3, '0')}`;
     }
 }

@@ -8,7 +8,7 @@ export default class HanhKhachRepo {
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
             WHERE 1=1
-            ${maHanhKhach ? executor`AND "MaHanhKhach" = ${maHanhKhach}`:executor``}
+            ${maHanhKhach ? executor`AND "MaHK" = ${maHanhKhach}`:executor``}
             ${hoTen ? executor`AND "HoTen" ILIKE ${'%' + hoTen+'%'}`:executor``}
             ${cmnd ? executor`AND "CMND" ILIKE ${'%' + cmnd+'%'}`:executor``}
             ${dienThoai ? executor`AND "DienThoai" ILIKE ${'%' + dienThoai+'%'}`:executor``}
@@ -21,7 +21,7 @@ export default class HanhKhachRepo {
         const executor = tx || this.db;
         const rows = await executor`
             SELECT * FROM "HANHKHACH"
-            WHERE "MaHanhKhach" = ${maHanhKhach} AND "DaXoa" = false
+            WHERE "MaHK" = ${maHanhKhach} AND "DaXoa" = false
             LIMIT 1;
         `;
         return rows[0] || null;
@@ -67,7 +67,7 @@ export default class HanhKhachRepo {
         const rows = await executor`
             UPDATE "HANHKHACH"
             SET "DaXoa" = true
-            WHERE "MaHanhKhach" = ${maHanhKhach};
+            WHERE "MaHK" = ${maHanhKhach};
         `;
         return rows[0];
     }

@@ -1,9 +1,8 @@
 export default class HanhKhachBO{
-    constructor({MaHanhKhach, HoTen, CMND, DienThoai, Email}={}){
-        this.maHanhKhach = MaHanhKhach;
+    constructor({MaHK, HoTen, CMND, DienThoai}={}){
+        this.maHanhKhach = MaHK;
         this.hoTen = HoTen;
         this.cmnd = CMND;
         this.dienThoai = DienThoai;
-        this.email = Email;
     }
 }

@@ -5,6 +5,13 @@ export default class ChuyenBayRepo{
     constructor(db){
         this.db=db;
     }
+    async laySTTChuyenBayTiepTheo(){
+        const rows= await this.db`
+            SELECT nextval('chuyenbay_seq') as next_id;
+        `;
+        console.log(rows);
+        return rows[0]?.next_id;
+    }
     async layThoiGianBayToiThieu() {
         try{
             const executor = this.db;
@@ -87,12 +94,12 @@ export default class ChuyenBayRepo{
     async taoChuyenBay(data,tx)  {
         try {
             const executor = tx || this.db;
-            const { maSanBayDi, maSanBayDen, ngayGio, slGheHang1, slGheHang2,
+            const { maChuyenBay,maSanBayDi, maSanBayDen, ngayGio, slGheHang1, slGheHang2,
                 giaVe, thoiGianBay } = data;
             const rows= await executor`
-                INSERT INTO "CHUYENBAY" ("MaSBDi",
+                INSERT INTO "CHUYENBAY" ("MaCB","MaSBDi",
                     "MaSBDen","NgayGio","GiaVe","ThoiGianBay","SLGheHang1","SLGheHang2")
-                VALUES (${maSanBayDi}, ${maSanBayDen}, ${ngayGio}, ${giaVe}, ${thoiGianBay}, ${slGheHang1}, ${slGheHang2})
+                VALUES (${maChuyenBay},${maSanBayDi}, ${maSanBayDen}, ${ngayGio}, ${giaVe}, ${thoiGianBay}, ${slGheHang1}, ${slGheHang2})
                 RETURNING *;
             `;
             return rows[0]||null;

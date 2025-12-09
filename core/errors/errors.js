@@ -21,6 +21,11 @@ export class DBError extends BaseError {
         super({type: "Database Error", detail});
     }
 }
+export class ServerError extends BaseError {
+    constructor(detail) {
+        super({detail});
+    }
+}
 
 export class ValidationError extends BaseError {
     constructor(detail) {

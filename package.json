@@ -15,7 +15,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@payos/node": "^2.0.3",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "dayjs": "^1.11.19",
