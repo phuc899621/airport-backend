@@ -1,18 +1,22 @@
 import { ConflictError, NotFoundError, ServerError, ValidationError } from "../../core/errors/errors.js";
 import ChuyenBayBO from "./chuyen_bay.bo.js";
+import HangVeChuyenBayChiTietBO from "./hang_ve_chuyen_bay_chi_tiet.bo.js";
+import HangVeChuyenBayBO from "./hang_ve_chuyen_bay.bo.js";
 import LichChuyenBayBO from "./lich_chuyen_bay.bo.js";
 import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import LichSanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import SanBayTrungGianChiTietBO from "./san_bay_trung_gian_chi_tiet.bo.js";
 
 export default class ChuyenBayService{
-    constructor(chuyenBayRepo, sanBayRepo,sanBayTrungGianRepo){
+    constructor(chuyenBayRepo, sanBayRepo,sanBayTrungGianRepo,hangVeChuyenBayRepo,hangVeRepo){
         this.repo=chuyenBayRepo;
         this.sanBayRepo=sanBayRepo;
-        this.sanBayTrungGianRepo=sanBayTrungGianRepo
+        this.sanBayTrungGianRepo=sanBayTrungGianRepo;
+        this.hangVeChuyenBayRepo=hangVeChuyenBayRepo;
+        this.hangVeRepo=hangVeRepo;
     }
-    async layLichChuyenBay(filter) {
-        const result = await this.repo.layLichChuyenBay(filter);
+    async layLichChuyenBay(maChuyenBay,filter) {
+        const result = await this.repo.layLichChuyenBay(maChuyenBay,filter);
         const lichChuyenBayMap=new Map();   
         console.log(result);
         for(const cb of result){
@@ -24,19 +28,31 @@ export default class ChuyenBayService{
             if(cb.MaSB){
                 lichChuyenBayMap.get(maChuyenBay).themSanBayTrungGian(maChuyenBay,new SanBayTrungGianBO(cb));
             }
+            if(cb.MaHV){
+                lichChuyenBayMap.get(maChuyenBay).themHangVeChuyenBay(maChuyenBay,new HangVeChuyenBayChiTietBO(cb));
+            }
         }
         console.log(lichChuyenBayMap); 
-        return lichChuyenBayMap;
+        if(maChuyenBay){
+            if(lichChuyenBayMap.size===0) return null;
+            return lichChuyenBayMap.get(maChuyenBay) ?? null;
+        }
+        return Array.from(lichChuyenBayMap.values());
     }
     async taoChuyenBay(data){
         const {maSanBayDi, maSanBayDen,thoiGianBay}=data;
+        //kiem tra ma san bay co ton tai
         const sanBayDiRaw=await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDi);
         const sanBayDenRaw=await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDen);
         if(!sanBayDiRaw) throw new NotFoundError("Mã sân bay đi không tồn tại");
         if(!sanBayDenRaw) throw new NotFoundError("Mã sân bay đến không tồn tại");
+
+        //kiem tra rang buoc thoi gian bay
         const thoiGianBayToiThieu = await this.repo.layThoiGianBayToiThieu();
         if(!thoiGianBayToiThieu) throw new ValidationError("Không kiểm tra được thời gian bay");
         if(thoiGianBay<thoiGianBayToiThieu) throw new ValidationError(`Thời gian bay phải lớn hơn ${thoiGianBayToiThieu} phút`);
+        
+        //kiem tra ma chuyen bay tao ra ko trung
         data.maChuyenBay=await this.taoMaCB();
         if(await this.repo.layChuyenBayTheoMaChuyenBay(data.maChuyenBay)) throw new ConflictError("Mã chuyển bay tạo bị trùng");
         const result=  await this.repo.taoChuyenBay(data);
@@ -45,7 +61,7 @@ export default class ChuyenBayService{
     async layChuyenBay(maChuyenBay){
         if(maChuyenBay) {
             const chuyenBayRaw=await this.repo.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
-            return chuyenBayRaw? new ChuyenBayBO(chuyenBayRaw):null;
+            return chuyenBayRaw? new LichChuyenBayBO(chuyenBayRaw):null;
         }
         return null;
     }
@@ -110,15 +126,13 @@ export default class ChuyenBayService{
 
 
     async capNhatChuyenBay(maChuyenBay, update={}){
-        const {maSanBayDi, maSanBayDen, ngayGio, giaVe, thoiGianBay, slGheHang1, slGheHang2 }=update;
+        const {maSanBayDi, maSanBayDen, ngayGio, giaVe, thoiGianBay }=update;
         const fieldMap={
             maSanBayDi:'MaSBDi',
             maSanBayDen:'MaSBDen',
             ngayGio:'NgayGio',
             giaVe:'GiaVe',
             thoiGianBay:'ThoiGianBay',
-            slGheHang1:'SLGheHang1',
-            slGheHang2:'SLGheHang2'
         }
         const data={};
         if(maChuyenBay&&!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) {
@@ -152,11 +166,53 @@ export default class ChuyenBayService{
         this.sanBayTrungGianRepo.xoaSanBayTrungGian(maChuyenBay,maSanBay);
     }
 
-
     async taoMaCB(){
         const next_id=await this.repo.laySTTChuyenBayTiepTheo();
         console.log(next_id);
         if(!next_id) throw new ServerError("Không thể tạo mã chuyển bay");
         return `CB${String(next_id).padStart(3, '0')}`;
     }
+    async layHangVeChuyenBay(maChuyenBay,tx){
+        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
+        const result= await this.hangVeChuyenBayRepo.layHangVeChuyenBayTheoMaChuyenBay(maChuyenBay,tx);
+        return result.map(item=>new HangVeChuyenBayBO(item));
+    }
+    async taoHangVeChuyenBay(data, tx) {
+        const { maChuyenBay, maHangVe } = data;
+        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
+        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
+        if(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx)) throw new ValidationError("Hạng vé chuyển bay đã tồn tại");
+        const result= await this.hangVeChuyenBayRepo.taoHangVeChuyenBay(data, tx);
+        return result? new HangVeChuyenBayBO(result):null;
+    }   
+    async capNhatHangVeChuyenBay(maChuyenBay, maHangVe, update={}, tx){
+        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
+        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
+        if(!(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx))) throw new NotFoundError("Hạng vé chuyển bay không tồn tại");
+        const fieldMap={
+            tongSoGhe:"TongSoGhe"
+        }
+        const data={};
+        for (const [key,column] of Object.entries(fieldMap)) {
+            if (update[key] !== undefined) {
+                console.log("capnhat:",key,column,update[key]);
+                data[column]=update[key];
+            }
+        }
+        if(Object.keys(data).length===0) throw new ValidationError("Vui lòng gửi trường để update");
+
+        const result= await this.hangVeChuyenBayRepo.capNhatHangVeChuyenBay(maChuyenBay, maHangVe, data, tx);
+        return result? new HangVeChuyenBayBO(result):null;
+    }
+    async xoaHangVeChuyenBayTheoMaHangVe(maChuyenBay, maHangVe, tx){
+        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
+        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
+        if(!(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx))) throw new NotFoundError("Hạng vé chuyển bay không tồn tại");
+        await this.hangVeChuyenBayRepo.xoaHangVeChuyenBayTheoMaHangVe(maChuyenBay, maHangVe, tx);
+    }
+    async xoaHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx){
+        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
+        await this.hangVeChuyenBayRepo.xoaHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx);
+    }
+
 }

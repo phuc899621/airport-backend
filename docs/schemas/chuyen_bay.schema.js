@@ -32,7 +32,6 @@
  *         ghiChu:
  *           type: string
  *           example: ""
- * 
  *     SanBayTrungGianObject:
  *       type: object
  *       properties:
@@ -46,15 +45,12 @@
  *           example: "SB001"
  *         thuTuDung:
  *           type: integer
- *           description: Thứ tự dừng sân bay trong chuyến bay 
+ *           description: Thứ tự dừng sân bay trong chuyến bay (thường chỉ có 1 và 2)
  *           example: 1
  *         thoiGianDung:
  *           type: integer
  *           description: Thời gian dừng sân bay trong chuyến bay (tính bằng phút)
  *           example: 20
- *         ghiChu:
- *           type: string
- *           example: ""
  * 
  *     LichChuyenBayObject:
  *       type: object
@@ -63,73 +59,63 @@
  *           type: string
  *           description: Mã chuyến bay
  *           example: "CB001"
- *         maSanBayDi:
- *           type: string
- *           description: Mã sân bay đi
- *           example: "SB001"
- *         maSanBayDen:
- *           type: string
- *           description: Mã sân bay đến    
- *           example: "SB002"    
- *         quocGiaSanBayDi:
- *           type: string
- *           description: Quốc gia sân bay đi
- *           example: "Việt Nam"
- *         quocGiaSanBayDen:
- *           type: string
- *           description: Quốc gia sân bay đến
- *           example: "Anh"    
- *         tenSanBayDi:
- *           type: string
- *           description: Tên sân bay đi
- *           example: "Sân bay Quốc tế Nội Bài"
- *         tenSanBayDen:
- *           type: string
- *           description: Tên sân bay đến
- *           example: "Melbourne Airport"
  *         thoiGianBay:
  *           type: integer
+ *           description: Thời gian bay chuyến bay (tính bằng phút)
  *           example: 240
- *         slGheHang1:
+ *         giaVeCoBan:
  *           type: integer
- *           example: 14
- *         slGheHang2:
- *           type: integer
- *           example: 86
- *         slGheHang1ConLai:
- *           type: integer
- *           example: 14
- *         slGheHang2ConLai:
- *           type: integer
- *           example: 86
- *         ngayGio:
- *           type: string
- *           format: date-time
- *           description: "Thời gian khỏi hành"
- *           example: "2025-12-01T11:40:52.000Z"
- *         giaVe:
- *           type: integer
- *           example: 700000
- *         giaVeHang1:
- *           type: integer
- *           example: 735000
- *         giaVeHang2:
- *           type: integer
- *           example: 700000
+ *           description: Gia ve cơ bản
+ *           example: 100000
+ *         sanBayDi:
+ *           type: object
+ *           properties:
+ *             maSanBay:
+ *               type: string
+ *               description: Mã sân bay đi
+ *               example: "SB001"
+ *             quocGia:
+ *               type: string
+ *               description: Quốc gia sân bay đi
+ *               example: "Việt Nam"
+ *             tenSanBay:
+ *               type: string
+ *               description: Tên sân bay đi
+ *               example: "Sân bay Quốc tế Nội Bài"
+ *         sanBayDen:
+ *           type: object
+ *           properties:
+ *             maSanBay:
+ *               type: string
+ *               description: Mã sân bay đến
+ *               example: "SB002"
+ *             quocGia:
+ *               type: string
+ *               description: Quốc gia sân bay đến
+ *               example: "Việt Nam"
+ *             tenSanBay:
+ *               type: string
+ *               description: Tên sân bay đến
+ *               example: "Sân bay Quốc tế Nội Bài"
  *         thoiGianDi:
  *           type: string
  *           format: date-time
- *           description: "Thời điểm khỏi hành"
- *           example: "2025-12-01T11:40:52.000Z"
+ *           description: "Thời gian khỏi hành"
+ *           example: "2025-12-02T03:30:00.000Z"
  *         thoiGianDen:
  *           type: string
  *           format: date-time
- *           description: "Thời gian đến dự kiên khi cộng thoiGianDi, thoiGianBay, thoiGianDung"
- *           example: "2025-12-01T15:40:52.000Z"
- *         SanBayTrungGian:
+ *           description: "Thời gian đến"
+ *           example: "2025-12-02T05:15:00.000Z"
+ *         hangVeChuyenBay:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/SanBayTrungGianChiTietObject'
+ *             $ref: "#/components/schemas/HangVeChuyenBayChiTietObject"
+ *         sanBayTrungGian:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/SanBayTrungGianObject"
+ *     
  * 
  * 
  *     ChuyenBayObject:
@@ -155,13 +141,45 @@
  *         thoiGianBay:
  *           type: integer
  *           example: 180
- *         slGheHang1:
+
+ *     HangVeChuyenBayChiTietObject:
+ *       type: object
+ *       properties:
+ *         maHangVe:
+ *           type: string
+ *           example: "HV001"
+ *         tenHangVe:
+ *           type: string
+ *           example: "Hạng nhất"
+ *         heSoGia:
+ *           type: integer
+ *           example: 1
+ *         giaVeTheoHang:
+ *           type: integer
+ *           example: 1500000
+ *         tongSoGhe:
  *           type: integer
  *           example: 14
- *         slGheHang2:
+ *         soGheConLai:
  *           type: integer
- *           example: 86
- * 
+ *           example: 14
+
+ *     HangVeChuyenBayObject:
+ *       type: object
+ *       properties:
+ *         maHangVe:
+ *           type: string
+ *           example: "HV001"
+ *         tenHangVe:
+ *           type: string
+ *           example: "Hạng nhất"
+ *         heSoGia:
+ *           type: integer
+ *           example: 1
+ *         tongSoGhe:
+ *           type: integer
+ *           example: 14
+
  *     TaoChuyenBayDto:
  *       type: object
  *       required:
@@ -170,8 +188,6 @@
  *         - ngayGio
  *         - giaVe
  *         - thoiGianBay
- *         - slGheHang1
- *         - slGheHang2
  *       properties:
  *         maSanBayDi:
  *           type: string
@@ -189,12 +205,6 @@
  *         thoiGianBay:
  *           type: integer
  *           example: 180
- *         slGheHang1:
- *           type: integer
- *           example: 14
- *         slGheHang2:
- *           type: integer
- *           example: 86
  * 
  * 
  *     CapNhatChuyenBayDto:
@@ -216,12 +226,6 @@
  *         thoiGianBay:
  *           type: integer
  *           example: 180
- *         slGheHang1:
- *           type: integer
- *           example: 14
- *         slGheHang2:
- *           type: integer
- *           example: 86
  */
 
 

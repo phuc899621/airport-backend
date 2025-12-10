@@ -1,12 +1,6 @@
 import joi from "joi";
 import { isoDateMsg, positiveIntMsg, stringMsg } from "../../middlewares/joi.message.js";
 
-export const layLichChuyenBayQuerySchema = joi.object({
-    maSanBayDi: joi.string().optional().messages(stringMsg('Mã sân bay đi')),
-    maSanBayDen: joi.string().optional().messages(stringMsg('Mã sân bay đến')),
-    tenSanBayDi: joi.string().optional().messages(stringMsg('Tên sân bay đi')),
-    tenSanBayDen: joi.string().optional().messages(stringMsg('Tên sân bay đến')),
-})
 
 export const layChuyenBayParamsSchema = joi.object({
     maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true))
@@ -26,8 +20,7 @@ export const taoChuyenBayBodySchema = joi.object({
     ngayGio: joi.string().isoDate().required().messages(isoDateMsg('Ngày khởi hành',true)),
     thoiGianBay: joi.number().integer().positive().required().messages(positiveIntMsg('Thoi gian bay',true)),
     giaVe: joi.number().integer().positive().required().messages(positiveIntMsg('Giá vé',true)),
-    slGheHang1: joi.number().integer().positive().required().messages(positiveIntMsg('Số lượng ghế hạng 1',true)),
-    slGheHang2: joi.number().integer().positive().required().messages(positiveIntMsg('Số lượng ghế hạng 2',true)),
+    
 })
 
 export const taoSanBayTrungGianBodySchema = joi.object({
@@ -46,8 +39,7 @@ export const capNhatChuyenBayBodySchema = joi.object({
     ngayGio: joi.date().iso().optional().messages(isoDateMsg('Ngày khởi hành')),
     thoiGianBay: joi.number().integer().positive().optional().messages(positiveIntMsg('Thoi gian bay')),
     giaVe: joi.number().integer().positive().optional().messages(positiveIntMsg('Giá vé')),
-    slGheHang1: joi.number().integer().positive().optional().messages(positiveIntMsg('Số lượng ghế hạng 1')),
-    slGheHang2: joi.number().integer().positive().optional().messages(positiveIntMsg('Số lượng ghế hạng 2')),
+    
 })
 
 export const capNhatChuyenBayParamsSchema = joi.object({
@@ -77,4 +69,31 @@ export const xoaChuyenBayParamsSchema= joi.object({
 export const xoaSanBayTrungGianParamsSchema= joi.object({
     maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true)),
     maSanBay: joi.string().required().messages(stringMsg('Mã sân bay',true))
+})
+
+export const layHangVeChuyenBayParamsSchema = joi.object({
+    maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true))
+})
+export const taoHangVeChuyenBayParamsSchema = joi.object({
+    maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true))
+})
+
+export const taoHangVeChuyenBayBodySchema = joi.object({
+    maHangVe: joi.string().required().messages(stringMsg('Mã hạng vé',true)),
+    tongSoGhe: joi.number().integer().positive().required().messages(positiveIntMsg('Tổng số ghế',true))
+})
+export const capNhatHangVeChuyenBayParamsSchema = joi.object({
+    maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true)),
+    maHangVe: joi.string().required().messages(stringMsg('Mã hạng vé',true)),
+})
+export const capNhatHangVeChuyenBayBodySchema = joi.object({
+    tongSoGhe: joi.number().integer().positive().optional().messages(positiveIntMsg('Tổng số ghế'))
+
+})
+export const xoaHangVeChuyenBayTheoMaChuyenBayParamsSchema = joi.object({
+    maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true))
+})
+export const xoaHangVeChuyenBayTheoMaHangVeParamsSchema = joi.object({
+    maChuyenBay: joi.string().required().messages(stringMsg('Mã chuyến bay',true)),
+    maHangVe: joi.string().required().messages(stringMsg('Mã hạng vé',true))
 })

@@ -35,7 +35,6 @@ export default class SanBayRepo {
                 SELECT * FROM "SANBAY"
                 WHERE "MaSB" = ${maSanBay}
                 AND "DaXoa" = false
-                LIMIT 1;
             `;
             return rows[0] || null;
         } catch (err) {

@@ -5,8 +5,8 @@ export default class SanBayTrungGianBO {
         GhiChu=null}) {
         this.maChuyenBay = MaCB;
         this.maSanBay = MaSB;
-        this.thoiGianDung = ThoiGianDung;
-        this.thuTuDung = ThuTuDung;
+        this.thoiGianDung = parseInt(ThoiGianDung);
+        this.thuTuDung = parseInt(ThuTuDung);
         this.ghiChu = GhiChu;
     }
 }

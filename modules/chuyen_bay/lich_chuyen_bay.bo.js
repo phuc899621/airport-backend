@@ -6,47 +6,65 @@ import ChuyenBayBO from "./chuyen_bay.bo.js";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default class LichChuyenBayBO extends ChuyenBayBO{
+export default class LichChuyenBayBO{
     constructor({
         MaCB=null,
         MaSBDi=null,
         MaSBDen=null,
         ThoiGianBay=null,
-        SLGheHang1=null,
-        SLGheHang2=null,
-        GiaVe=null,
+        GiaVeCoBan=null,
         NgayGio=null,
         QuocGiaSBDi=null,
         QuocGiaSBDen=null,
         TenSBDi=null,
         TenSBDen=null,
-        SLGheHang1ConLai=null,
-        SLGheHang2ConLai=null,
-        GiaVeHang1=null,
-        GiaVeHang2=null,
-        SanBayTrungGian=[]
+        SanBayTrungGian=[],
+        HangVeChuyenBay=[]
     }){
-        super({MaCB, MaSBDi, MaSBDen, NgayGio, ThoiGianBay, GiaVe, SLGheHang1, SLGheHang2});
+        
         const thoiGianDi=dayjs(NgayGio);
         const thoiGianDen=thoiGianDi.add(ThoiGianBay,'m');
+        this.maChuyenBay=MaCB;
         this.thoiGianBay=parseInt(ThoiGianBay);
-        this.quocGiaSanBayDi=QuocGiaSBDi;
-        this.quocGiaSanBayDen=QuocGiaSBDen;
-        this.tenSanBayDi=TenSBDi;
-        this.tenSanBayDen=TenSBDen;
+        this.giaVeCoBan=parseInt(GiaVeCoBan);
+        this.sanBayDi={
+            maSanBay:MaSBDi,
+            quocGia:QuocGiaSBDi,
+            tenSanBay:TenSBDi
+        };
+        this.sanBayDen={
+            maSanBay:MaSBDen,
+            quocGia:QuocGiaSBDen,
+            tenSanBay:TenSBDen
+        }
         this.thoiGianDi=thoiGianDi.toISOString();
         this.thoiGianDen=thoiGianDen.toISOString();
-        this.slGheHang1ConLai=parseInt(SLGheHang1ConLai);
-        this.slGheHang2ConLai=parseInt(SLGheHang2ConLai);
-        this.giaVeHang1=GiaVeHang1;
-        this.giaVeHang2=GiaVeHang2;
         this.sanBayTrungGian=SanBayTrungGian;
+        this.hangVeChuyenBay=HangVeChuyenBay;
+        this._sbTGSet=new Set();
+        this._hangVeSet=new Set();
     }
     themSanBayTrungGian(maChuyenBay,sanBayTrungGian){
         if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
-        const thoiGianDi=dayjs(this.thoiGianDi);
-        const thoiGianDen=thoiGianDi.add(sanBayTrungGian.thoiGianDung,'m');
-        this.thoiGianDen=thoiGianDen;
+        const key = `${sanBayTrungGian.maChuyenBay}_${sanBayTrungGian.maSanBay}`;
+        if(this._sbTGSet.has(key)) return;
+        this._sbTGSet.add(key);
+
+        const thoiGianHienTai = dayjs(this.thoiGianDen);
+        this.thoiGianDen = thoiGianHienTai
+            .add(Number(sanBayTrungGian.thoiGianDung), 'm')
+            .toISOString();
         this.sanBayTrungGian.push(sanBayTrungGian);
+    }
+    themHangVeChuyenBay(maChuyenBay, hangVeChuyenBay){
+        if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
+        if(this._hangVeSet.has(hangVeChuyenBay.maHangVe)) return;
+
+        this._hangVeSet.add(hangVeChuyenBay.maHangVe);
+        this.hangVeChuyenBay.push(hangVeChuyenBay);
+    }
+    toJSON(){
+        const {_hangVeSet,_sbTGSet,...data}=this;
+        return data;
     }
 }
