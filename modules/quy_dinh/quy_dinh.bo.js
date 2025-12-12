@@ -1,6 +1,6 @@
 export default class QuyDinhBO{
     constructor({TenTS=null, GiaTri=null}){
         this.tenQuyDinh = TenTS;
-        this.giaTri = GiaTri;
+        this.giaTri = parseInt(GiaTri);
     }
 }

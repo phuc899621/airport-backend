@@ -18,6 +18,25 @@ export default class QuyDinhRepo {
             throw new DBError(err.message);
         }
     }
+    async capNhatNhieuQuyDinh(quyDinhs, tx) {
+        try {
+            const executor = tx || this.db;
+            console.log(quyDinhs);
+            const rows = await executor`
+                UPDATE "THAMSO" AS ts
+                SET "GiaTri" = v."GiaTri"::bigint
+                FROM (
+                    VALUES ${executor(quyDinhs.map(q => [q.tenQuyDinh, q.giaTri]))}
+                ) AS v("TenTS", "GiaTri")
+                WHERE ts."TenTS" = v."TenTS"
+                RETURNING ts.*;
+            `;
+            console.log("Quy dinh cap nhat",rows);
+            return rows;
+        } catch (err) {
+            throw new DBError(err.message);
+        }
+    }
     async layQuyDinhTheoTen(tenQuyDinh, tx) {
         try {
             const executor = tx || this.db;

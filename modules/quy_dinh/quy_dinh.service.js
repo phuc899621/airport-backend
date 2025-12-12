@@ -11,6 +11,10 @@ export default class QuyDinhService{
         const result= await this.repo.capNhatQuyDinh(tenQuyDinh,data,tx);
         return result? new QuyDinhBO(result):null;
     }
+    async capNhatNhieuQuyDinh(dsQuyDinh,tx){ 
+        const result= await this.repo.capNhatNhieuQuyDinh(dsQuyDinh,tx);
+        return result.map(item=>new QuyDinhBO(item));
+    }
     async layQuyDinh(tx){
         const result= await this.repo.layQuyDinh(tx);
         return result.map(item=>new QuyDinhBO(item));

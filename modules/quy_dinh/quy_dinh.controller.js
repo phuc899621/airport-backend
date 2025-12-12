@@ -16,6 +16,18 @@ export const capNhatQuyDinh = async (req, res, next) => {
         errorHandler(res, err);
     }
 }
+export const capNhatNhieuQuyDinh = async (req, res, next) => {
+    try {
+        const quyDinh=await quyDinhService.capNhatNhieuQuyDinh(req.body.quyDinhs);
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật quy định thành công!",
+            data: quyDinh
+        }); 
+    } catch (err) {
+        errorHandler(res, err);
+    }
+}
 export const layQuyDinh = async (req, res, next) => {
     try {
         const quyDinh=await quyDinhService.layQuyDinh(db.tx);

@@ -163,7 +163,7 @@ export default class ChuyenBayService{
     }
     async xoaSanBayTrungGian(maChuyenBay,maSanBay){
         if(!(await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay))) throw new NotFoundError("Sân bay trung gian không tồn tại");
-        this.sanBayTrungGianRepo.xoaSanBayTrungGian(maChuyenBay,maSanBay);
+        await this.sanBayTrungGianRepo.xoaSanBayTrungGian(maChuyenBay,maSanBay);
     }
 
     async taoMaCB(){
