@@ -6,6 +6,7 @@ import LichChuyenBayBO from "./lich_chuyen_bay.bo.js";
 import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import LichSanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import SanBayTrungGianChiTietBO from "./san_bay_trung_gian_chi_tiet.bo.js";
+import LichChuyenBayChiTietBO from "./lich_chuyen_bay_chi_tiet.bo.js";
 
 export default class ChuyenBayService{
     constructor(chuyenBayRepo, sanBayRepo,sanBayTrungGianRepo,hangVeChuyenBayRepo,hangVeRepo){
@@ -24,6 +25,30 @@ export default class ChuyenBayService{
             if(!lichChuyenBayMap.has(maChuyenBay)){
                 lichChuyenBayMap.set(maChuyenBay,
                 new LichChuyenBayBO(cb));
+            }
+        }
+        console.log(lichChuyenBayMap); 
+        if(maChuyenBay){
+            if(lichChuyenBayMap.size===0) return null;
+            return lichChuyenBayMap.get(maChuyenBay) ?? null;
+        }
+        return Array.from(lichChuyenBayMap.values());
+    }
+    async layLichChuyenBayTheoMaChuyenBay(maChuyenBay){
+        const result = await this.repo.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
+        const lichChuyenBayMap=new Map();   
+        console.log(result);
+        for(const cb of result){
+            const maChuyenBay=cb.MaCB;
+            if(!lichChuyenBayMap.has(maChuyenBay)){
+                lichChuyenBayMap.set(maChuyenBay,
+                new LichChuyenBayChiTietBO(cb));
+            }
+            if(cb.MaSB){
+                lichChuyenBayMap.get(maChuyenBay).themSanBayTrungGian(maChuyenBay,new SanBayTrungGianBO(cb));
+            }
+            if(cb.MaHV){
+                lichChuyenBayMap.get(maChuyenBay).themHangVeChuyenBay(maChuyenBay,new HangVeChuyenBayChiTietBO(cb));
             }
         }
         console.log(lichChuyenBayMap); 

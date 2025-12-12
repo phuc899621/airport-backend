@@ -30,6 +30,19 @@ export const layLichChuyenBay = async (req, res) => {
         errorHandler(res, err);
     }
 };
+export const layLichChuyenBayTheoMaChuyenBay = async (req, res) => {
+    try{
+        const {maChuyenBay}=req.params;
+        const result=await chuyenBayService.layLichChuyenBayTheoMaChuyenBay(maChuyenBay,req.query);
+        res.status(200).json({
+            success: true,
+            message: "Lấy lịch chuyến bay thành công!",
+            data: result
+        });
+    } catch (err) {
+        errorHandler(res, err);
+    }
+};
 export const laySanBayTrungGian = async (req, res) => {
     try{
         const {maChuyenBay,maSanBay}=req.params;

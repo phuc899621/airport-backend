@@ -141,7 +141,7 @@ export default class ChuyenBayRepo{
                 ${maChuyenBay ? executor`AND cb."MaCB" = ${maChuyenBay}` : executor``}
                 ORDER BY cb."NgayGio" ASC, sbtg."ThuTuDung" ASC;
             `;
-            return result[0] || null;
+            return result;
         } catch (err) {
             throw new DBError(err.message);
         }

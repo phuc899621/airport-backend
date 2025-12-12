@@ -7,7 +7,7 @@ import ValidateOption from "../../middlewares/base.validator.option.js";
 const router = express.Router();
 
 router.get("/",ChuyenBayController.layLichChuyenBay); 
-router.get("/:maChuyenBay", validate(ChuyenBayValidator.layChuyenBayParamsSchema,ValidateOption.PARAMS),ChuyenBayController.layLichChuyenBay);
+router.get("/:maChuyenBay", validate(ChuyenBayValidator.layChuyenBayParamsSchema,ValidateOption.PARAMS),ChuyenBayController.layLichChuyenBayTheoMaChuyenBay);
 router.get("/:maChuyenBay/san-bay", validate(ChuyenBayValidator.layDanhSachSanBayTrungGianParamsSchema,ValidateOption.PARAMS),ChuyenBayController.laySanBayTrungGian);
 router.get("/:maChuyenBay/san-bay/:maSanBay", validate(ChuyenBayValidator.laySanBayTrungGianParamsSchema,ValidateOption.PARAMS),ChuyenBayController.laySanBayTrungGian);
 router.get("/:maChuyenBay/hang-ve",validate(ChuyenBayValidator.layHangVeChuyenBayParamsSchema,ValidateOption.PARAMS) ,ChuyenBayController.layHangVeChuyenBay);
