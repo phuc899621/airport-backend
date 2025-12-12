@@ -25,12 +25,6 @@ export default class ChuyenBayService{
                 lichChuyenBayMap.set(maChuyenBay,
                 new LichChuyenBayBO(cb));
             }
-            if(cb.MaSB){
-                lichChuyenBayMap.get(maChuyenBay).themSanBayTrungGian(maChuyenBay,new SanBayTrungGianBO(cb));
-            }
-            if(cb.MaHV){
-                lichChuyenBayMap.get(maChuyenBay).themHangVeChuyenBay(maChuyenBay,new HangVeChuyenBayChiTietBO(cb));
-            }
         }
         console.log(lichChuyenBayMap); 
         if(maChuyenBay){

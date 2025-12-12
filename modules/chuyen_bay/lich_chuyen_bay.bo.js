@@ -11,60 +11,26 @@ export default class LichChuyenBayBO{
         MaCB=null,
         MaSBDi=null,
         MaSBDen=null,
+        TenSBDi=null,
+        TenSBDen=null,
         ThoiGianBay=null,
         GiaVeCoBan=null,
         NgayGio=null,
-        QuocGiaSBDi=null,
-        QuocGiaSBDen=null,
-        TenSBDi=null,
-        TenSBDen=null,
-        SanBayTrungGian=[],
-        HangVeChuyenBay=[]
+        TongSoGhe=null,
+        TongSoGheDaDat=null,
+        TongSoGheConLai=null,
+
     }){
-        
-        const thoiGianDi=dayjs(NgayGio);
-        const thoiGianDen=thoiGianDi.add(ThoiGianBay,'m');
-        this.maChuyenBay=MaCB;
-        this.thoiGianBay=parseInt(ThoiGianBay);
-        this.giaVeCoBan=parseInt(GiaVeCoBan);
-        this.sanBayDi={
-            maSanBay:MaSBDi,
-            quocGia:QuocGiaSBDi,
-            tenSanBay:TenSBDi
-        };
-        this.sanBayDen={
-            maSanBay:MaSBDen,
-            quocGia:QuocGiaSBDen,
-            tenSanBay:TenSBDen
-        }
-        this.thoiGianDi=thoiGianDi.toISOString();
-        this.thoiGianDen=thoiGianDen.toISOString();
-        this.sanBayTrungGian=SanBayTrungGian;
-        this.hangVeChuyenBay=HangVeChuyenBay;
-        this._sbTGSet=new Set();
-        this._hangVeSet=new Set();
-    }
-    themSanBayTrungGian(maChuyenBay,sanBayTrungGian){
-        if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
-        const key = `${sanBayTrungGian.maChuyenBay}_${sanBayTrungGian.maSanBay}`;
-        if(this._sbTGSet.has(key)) return;
-        this._sbTGSet.add(key);
-
-        const thoiGianHienTai = dayjs(this.thoiGianDen);
-        this.thoiGianDen = thoiGianHienTai
-            .add(Number(sanBayTrungGian.thoiGianDung), 'm')
-            .toISOString();
-        this.sanBayTrungGian.push(sanBayTrungGian);
-    }
-    themHangVeChuyenBay(maChuyenBay, hangVeChuyenBay){
-        if(!maChuyenBay||maChuyenBay!==this.maChuyenBay) return;
-        if(this._hangVeSet.has(hangVeChuyenBay.maHangVe)) return;
-
-        this._hangVeSet.add(hangVeChuyenBay.maHangVe);
-        this.hangVeChuyenBay.push(hangVeChuyenBay);
-    }
-    toJSON(){
-        const {_hangVeSet,_sbTGSet,...data}=this;
-        return data;
+        this.maChuyenBay=MaCB,
+        this.maSanBayDi=MaSBDi,
+        this.maSanBayDen=MaSBDen,
+        this.tenSanBayDi=TenSBDi,
+        this.tenSanBayDen=TenSBDen,
+        this.thoiGianBay=ThoiGianBay,
+        this.giaVeCoBan=GiaVeCoBan,
+        this.ngayGio=NgayGio,
+        this.tongSoGhe=TongSoGhe,
+        this.tongSoGheDaDat=TongSoGheDaDat,
+        this.tongSoGheConLai=TongSoGheConLai
     }
 }
