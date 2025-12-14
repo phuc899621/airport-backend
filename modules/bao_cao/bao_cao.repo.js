@@ -2,10 +2,11 @@ export default class BaoCaoRepo{
     constructor(db){
         this.db=db;
     }
-    async layBaoCao(start,end,tx){
+    async layBaoCaoTheoThang(start,end,tx){
         const executor = tx || this.db;
         const rows = await executor`
             SELECT
+                EXTRACT(MONTH FROM cb."NgayGio") AS "Thang",
                 cb."MaCB",
                 COUNT(v."MaVe") AS "SoVeDaBan",
                 COALESCE(SUM(hvcb."TongSoGhe"), 0) AS "TongSoGhe",
@@ -19,7 +20,6 @@ export default class BaoCaoRepo{
             JOIN "HANGVECHUYENBAY" hvcb
                 ON hvcb."MaCB" = cb."MaCB"
 
-            -- Vé đã bán
             LEFT JOIN "VECHUYENBAY" v
                 ON v."MaCB" = cb."MaCB"
             AND v."TrangThai" <> 'da_huy'

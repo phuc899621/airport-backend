@@ -4,5 +4,6 @@ import { validate } from "../../middlewares/base.validator.js";
 
 const router = express.Router();
 
-router.get("/",BaoCaoController.layBaoCao);
+router.get("/thang/:nam",BaoCaoController.layBaoCaoTheoThang);
+router.get("/nam/:nam",BaoCaoController.layBaoCaoTheoNam);
 export default router;

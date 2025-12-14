@@ -1,6 +1,6 @@
 import express from "express";
 import AuthRouter from "./modules/auth/auth.route.js";
-import ChuyenBayRouter from "./modules/chuyen_bay/chuyen_bay.route.js";
+//import ChuyenBayRouter from "./modules/chuyen_bay/chuyen_bay.route.js";
 import SanBayRouter from "./modules/san_bay/san_bay.route.js";
 import QuyDinhRouter from "./modules/quy_dinh/quy_dinh.route.js";
 import session from "express-session";
@@ -30,7 +30,7 @@ app.use(
 
 
 app.use("/auth", AuthRouter);
-app.use("/chuyen-bay", ChuyenBayRouter);
+//app.use("/chuyen-bay", ChuyenBayRouter);
 app.use("/san-bay", SanBayRouter);
 app.use("/hanh-khach", HanhKhachRouter);
 app.use("/quy-dinh", QuyDinhRouter);

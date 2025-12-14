@@ -1,27 +1,35 @@
-
 import { NotFoundError } from "../../core/errors/errors.js";
 import QuyDinhBO from "./quy_dinh.bo.js";
+import { QuyDinhMapper } from "./quy_dinh.mapper.js";
 
-export default class QuyDinhService{
-    constructor(quyDinhRepo){
-        this.repo=quyDinhRepo;
-    }
-    async capNhatQuyDinh(tenQuyDinh,data,tx){ 
-        if(!(await this.repo.layQuyDinhTheoTen(tenQuyDinh,tx))) throw new NotFoundError("Quy định không tồn tại");
-        const result= await this.repo.capNhatQuyDinh(tenQuyDinh,data,tx);
-        return result? new QuyDinhBO(result):null;
-    }
-    async capNhatNhieuQuyDinh(dsQuyDinh,tx){ 
-        const result= await this.repo.capNhatNhieuQuyDinh(dsQuyDinh,tx);
-        return result.map(item=>new QuyDinhBO(item));
-    }
-    async layQuyDinh(tx){
-        const result= await this.repo.layQuyDinh(tx);
-        return result.map(item=>new QuyDinhBO(item));
-    }
-    async layQuyDinhTheoTen(tenQuyDinh){
-        const result= await this.repo.layQuyDinhTheoTen(tenQuyDinh);
-        if(!result) throw new NotFoundError("Quy định không tồn tại");
-        return new QuyDinhBO(result);
-    }
-}
+const createQuyDinhService = (quyDinhRepo) => ({
+  capNhatQuyDinh: async (tenQuyDinh, data, tx) => {
+    await this.kiemTraQuyDinhTonTai(tenQuyDinh);
+
+    const result = await quyDinhRepo.capNhatQuyDinh(tenQuyDinh, data, tx);
+    return result ? QuyDinhMapper.toResponse(result) : null;
+  },
+
+  capNhatNhieuQuyDinh: async (dsQuyDinh, tx) => {
+    const result = await quyDinhRepo.capNhatNhieuQuyDinh(dsQuyDinh, tx);
+    return result.map(QuyDinhMapper.toResponse);
+  },
+
+  layQuyDinh: async (tx) => {
+    const result = await quyDinhRepo.layQuyDinh(tx);
+    return result.map(QuyDinhMapper.toResponse);
+  },
+
+  layQuyDinhTheoTen: async (tenQuyDinh) => {
+    const result = await quyDinhRepo.layQuyDinhTheoTen(tenQuyDinh);
+    if (!result) throw new NotFoundError("Quy định không tồn tại");
+    return QuyDinhMapper.toResponse(result);
+  },
+  kiemTraQuyDinhTonTai: async (tenQuyDinh) => {
+    const result = await quyDinhRepo.layQuyDinhTheoTen(tenQuyDinh);
+    if (!result) throw new NotFoundError("Quy định không tồn tại");
+    return true;
+  }
+});
+
+export default createQuyDinhService;
