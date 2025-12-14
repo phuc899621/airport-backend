@@ -6,9 +6,9 @@ import ChuyenBayService from './chuyen_bay.service.js';
 import db from '../../core/config/db.js';
 import SanBayTrungGianRepo from './san_bay_trung_gian.repo.js';
 import HangVeChuyenBayRepo from './hang_ve_chuyen_bay.repo.js';
-import HangVeRepo from '../hang_ve/hang_ve.repo.js';
+import createHangVeRepo from '../hang_ve/hang_ve.repo.js';
 
-const hangVeRepo=new HangVeRepo(db);
+const hangVeRepo=createHangVeRepo(db);
 
 const chuyenBayRepo=new ChuyenBayRepo(db);
 const hangVeChuyenBayRepo=new HangVeChuyenBayRepo(db);

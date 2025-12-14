@@ -7,7 +7,9 @@ import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import LichSanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
 import SanBayTrungGianChiTietBO from "./san_bay_trung_gian_chi_tiet.bo.js";
 import LichChuyenBayChiTietBO from "./lich_chuyen_bay_chi_tiet.bo.js";
-
+import db from "../../core/config/db.js";
+import createHangVeRepo from "../hang_ve/hang_ve.repo.js";
+const hangVeRepo=createHangVeRepo(db);
 export default class ChuyenBayService{
     constructor(chuyenBayRepo, sanBayRepo,sanBayTrungGianRepo,hangVeChuyenBayRepo,hangVeRepo){
         this.repo=chuyenBayRepo;

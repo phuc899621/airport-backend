@@ -4,6 +4,7 @@ import ChuyenBayRepo from "../chuyen_bay/chuyen_bay.repo.js";
 import ChuyenBayService from "../chuyen_bay/chuyen_bay.service.js";
 import HangVeChuyenBayRepo from "../chuyen_bay/hang_ve_chuyen_bay.repo.js";
 import SanBayTrungGianRepo from "../chuyen_bay/san_bay_trung_gian.repo.js";
+import createHangVeRepo from "../hang_ve/hang_ve.repo.js";
 import HangVeRepo from "../hang_ve/hang_ve.repo.js";
 import SanBayRepo from "../san_bay/san_bay.repo.js";
 import VeRepo from "./ve.repo.js";
@@ -13,9 +14,9 @@ const chuyenBayService=new ChuyenBayService(
     new SanBayRepo(db),
     new SanBayTrungGianRepo(db),
     new HangVeChuyenBayRepo(db),
-    new HangVeRepo(db)
+    createHangVeRepo(db)
 );
-const veService=new VeService(new VeRepo(db), chuyenBayService,new HangVeRepo(db));
+const veService=new VeService(new VeRepo(db), chuyenBayService,createHangVeRepo(db));
 
 export const muaVe = async (req, res, next) => {
     try{

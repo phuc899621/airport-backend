@@ -23,3 +23,11 @@ export const isoDateMsg = (label, required=false) => ({
     "string.empty": `${label} không được để trống`,
   }
 });
+
+export const positiveFloatMsg = (label, required = false) => ({
+  "number.base": `${label} phải là số`,       
+  "number.positive": `${label} phải là số dương`, 
+  ...required && {
+    "any.required": `Vui lòng cung cấp ${label.toLowerCase()}`,
+  }
+});

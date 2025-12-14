@@ -8,6 +8,7 @@ import setupSwagger from "./docs/swagger.js";
 import HanhKhachRouter from "./modules/hanh_khach/hanh_khach.route.js";
 import VeRouter from "./modules/ve/ve.route.js";
 import BaoCaoRouter from "./modules/bao_cao/bao_cao.route.js";
+import HangVeRouter from "./modules/hang_ve/hang_ve.route.js";
 const app = express();
 const PORT = 3000;
 
@@ -35,7 +36,7 @@ app.use("/hanh-khach", HanhKhachRouter);
 app.use("/quy-dinh", QuyDinhRouter);
 app.use("/ve", VeRouter);
 app.use("/bao-cao", BaoCaoRouter);
-
+app.use("/hang-ve", HangVeRouter);
 
 app.get("/", async (req, res) => {
   res.send("Hello World!");
