@@ -30,3 +30,28 @@ export const muaVe = async (req, res, next) => {
         errorHandler(res, err);
     }
 }
+export const datVe = async (req, res, next) => {
+    try{
+        const data=req.body;
+        const result=await veService.datVe(data);
+        res.status(201).json({
+            success: true,
+            message: "Dat vé thành công!",
+            data: result
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
+export const layVe = async (req, res, next) => {
+    try{
+        const result=await veService.layVe();
+        res.status(200).json({
+            success: true,
+            message: "Lay vé thành công!",
+            data: result
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
