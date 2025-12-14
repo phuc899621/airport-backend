@@ -7,5 +7,6 @@ const router = express.Router();
 router.post("/dat-ve",VeController.datVe);
 router.post("/mua-ve",VeController.muaVe);
 router.get("/",VeController.layVe);
-
+router.patch("/:maVe/thanh-toan",VeController.thanhToanVe);
+router.delete("/:maVe",VeController.huyVe);
 export default router;

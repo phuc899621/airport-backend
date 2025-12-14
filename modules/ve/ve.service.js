@@ -12,6 +12,19 @@ export class VeService {
         return result.map(item=>new VeBO(item));
     }
 
+    async thanhToanVe(maVe){
+        const data={};
+        data["TrangThai"]='da_mua';
+        const result = await this.repo.capNhatVe(maVe,data);
+        console.log(result);
+        return result?new VeBO(result):null;
+    }
+    async huyVe(maVe){
+        const result = await this.repo.huyVe(maVe);
+        console.log(result);
+        return result?new VeBO(result):null;
+    }
+
     async muaVe(data) {
         const { maChuyenBay } = data;
         console.log(maChuyenBay);

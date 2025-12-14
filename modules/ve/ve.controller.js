@@ -55,3 +55,29 @@ export const layVe = async (req, res, next) => {
         errorHandler(res, err);
     }
 }
+export const thanhToanVe = async (req, res, next) =>{
+    try{
+        const {maVe}=req.params ;
+        const result=await veService.thanhToanVe(maVe);
+        res.status(200).json({
+            success: true,
+            message: "Thanh toán vé thành công!",
+            data: result
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}
+export const huyVe = async (req, res, next) =>{
+    try{
+        const {maVe}=req.params ;
+        const result=await veService.huyVe(maVe);
+        res.status(200).json({
+            success: true,
+            message: "Huy vé thành công!",
+            data: result
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+}

@@ -26,8 +26,30 @@ export default class VeRepo{
             SELECT * FROM "VECHUYENBAY" v
             JOIN "HANGVE" hv ON hv."MaHV" = v."MaHV"
             JOIN "HANHKHACH" hk ON hk."MaHK" = v."MaHK"
+            WHERE v."TrangThai" <> 'da_huy'
             ;`;
         return rows;
+    }
+    async capNhatVe(maVe,data,tx){
+        console.log(data, maVe);
+        const executor = tx || this.db;
+        const columns = Object.keys(data);
+        const rows = await executor`
+            UPDATE "VECHUYENBAY"
+            SET ${executor(data,columns)}
+            WHERE "MaVe" = ${maVe}
+            RETURNING *;`;
+            console.log(rows);  
+        return rows[0] || null;
+    }
+    async huyVe(maVe,tx){
+        const executor = tx || this.db;
+        const rows = await executor`
+            UPDATE "VECHUYENBAY"
+            SET "TrangThai" = 'da_huy'
+            WHERE "MaVe" = ${maVe}
+            RETURNING *;`;
+        return rows[0] || null;
     }
 
 
