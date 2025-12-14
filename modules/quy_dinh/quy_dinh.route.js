@@ -6,6 +6,7 @@ import ValidateOption from "../../middlewares/base.validator.option.js";
 const router = express.Router();
 
 router.get("/",QuyDinhController.layQuyDinh);
+router.get("/:tenQuyDinh", QuyDinhController.layQuyDinhTheoTen);
 router.put("/:tenQuyDinh",
     validate(QuyDinhValidator.capNhatQuyDinhParamsSchema,ValidateOption.PARAMS),
     validate(QuyDinhValidator.capNhatQuyDinhBodySchema),QuyDinhController.capNhatQuyDinh);

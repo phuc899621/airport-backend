@@ -27,6 +27,7 @@ export default class ChuyenBayRepo{
     async layLichChuyenBay(maChuyenBay,query,tx) {
         try {
             const executor = tx || this.db;
+            const { conGheTrong, coHangVe, daBay } = query;
             const result = await executor`
                 SELECT 
                     cb."MaCB",
@@ -40,9 +41,9 @@ export default class ChuyenBayRepo{
                     cb."NgayGio",
                     cb."GiaVe" as "GiaVeCoBan",
 
-                    COALESCE(hvSum."TongGhe", 0) AS "TongSoGhe",
+                    COALESCE(hvSum."TongSoGhe", 0) AS "TongSoGhe",
                     COALESCE(vd."DaDat", 0) AS "TongSoGheDaDat",
-                    (COALESCE(hvSum."TongGhe", 0) - COALESCE(vd."DaDat", 0)) AS "TongSoGheConLai"
+                    (COALESCE(hvSum."TongSoGhe", 0) - COALESCE(vd."DaDat", 0)) AS "TongSoGheConLai"
                     
                 FROM "CHUYENBAY" cb
                 LEFT JOIN "SANBAY" AS sbDi
@@ -50,7 +51,7 @@ export default class ChuyenBayRepo{
                 LEFT JOIN "SANBAY" AS sbDen
                     ON cb."MaSBDen" = sbDen."MaSB"
                 LEFT JOIN (
-                    SELECT "MaCB", SUM("TongSoGhe") AS "TongGhe"
+                    SELECT "MaCB", SUM("TongSoGhe") AS "TongSoGhe"
                     FROM "HANGVECHUYENBAY"
                     GROUP BY "MaCB"
                 ) hvSum ON hvSum."MaCB" = cb."MaCB"
@@ -63,8 +64,15 @@ export default class ChuyenBayRepo{
                 ) vd ON vd."MaCB" = cb."MaCB"
                 WHERE cb."DaXoa" = false
                 ${maChuyenBay ? executor`AND cb."MaCB" = ${maChuyenBay}` : executor``}
+                ${coHangVe===true ? executor`AND "TongSoGhe" > 0` : executor``}
+                ${coHangVe===false ? executor`AND "TongSoGhe" = 0` : executor``}
+                ${conGheTrong === true ? executor`AND "TongSoGheConLai" > 0` : executor``}
+                ${conGheTrong === false ? executor`AND "TongSoGheConLai" = 0` : executor``}
+                ${daBay===true ? executor`AND "NgayGio" < NOW()` : executor``}
+                ${daBay===false ? executor`AND "NgayGio" >= NOW()` : executor``}
                 ORDER BY cb."NgayGio" ASC;
             `;
+            console.log(daBay);
             return result;
         } catch (err) {
             throw new DBError(err.message);
@@ -106,6 +114,7 @@ export default class ChuyenBayRepo{
                     
                     hv."MaHV",
                     hv."TenHV",
+                    hv."HeSoGia",
                     hvcb."TongSoGhe",
 
                     ROUND(cb."GiaVe" * hv."HeSoGia") AS "GiaVeTheoHang",

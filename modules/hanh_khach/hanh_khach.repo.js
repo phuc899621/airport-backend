@@ -24,6 +24,15 @@ export default class HanhKhachRepo {
         `;
         return rows;
     }
+    async layHanhKhachTheoCMND(cmnd, tx) {
+        const executor = tx || this.db;
+        const rows = await executor`
+            SELECT * FROM "HANHKHACH"
+            WHERE "CMND" = ILIKE ${'%' + cmnd+'%'} AND "DaXoa" = false
+            LIMIT 1;
+        `;
+        return rows[0] || null;
+    }
     async layHanhKhachTheoMaHanhKhach(maHanhKhach, tx) {
         const executor = tx || this.db;
         const rows = await executor`

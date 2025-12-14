@@ -19,4 +19,9 @@ export default class QuyDinhService{
         const result= await this.repo.layQuyDinh(tx);
         return result.map(item=>new QuyDinhBO(item));
     }
+    async layQuyDinhTheoTen(tenQuyDinh){
+        const result= await this.repo.layQuyDinhTheoTen(tenQuyDinh);
+        if(!result) throw new NotFoundError("Quy định không tồn tại");
+        return new QuyDinhBO(result);
+    }
 }

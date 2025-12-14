@@ -1,4 +1,4 @@
-import { ValidationError } from "../../core/errors/errors.js";
+import { NotFoundError, ValidationError } from "../../core/errors/errors.js";
 import HanhKhachBO from "./hanh_khach.bo.js";
 
 export default class HanhKhachService {
@@ -7,11 +7,18 @@ export default class HanhKhachService {
     }
     async layHanhKhach(maHanhKhach,filter){
         if(maHanhKhach){
-            const hanhKhachRaw= this.repo.layHanhKhachTheoMaHanhKhach(maHanhKhach);
-            return hanhKhachRaw?new HanhKhachBO(hanhKhachRaw):null;
+            const hanhKhachRaw= await this.repo.layHanhKhachTheoMaHanhKhach(maHanhKhach);
+            if(!hanhKhachRaw) throw new NotFoundError("Không tìm thấy hành khách"); 
+            return new HanhKhachBO(hanhKhachRaw);
         }
         const dsHanhKhachRaw=await this.repo.layHanhKhach(filter);
         return dsHanhKhachRaw.map(hanhKhachRaw=>new HanhKhachBO(hanhKhachRaw));
+    }
+    
+    async layHanhKhachTheoCMND(cmnd){
+        const hanhKhachRaw=await this.repo.layHanhKhachTheoCMND(cmnd);
+        if(!hanhKhachRaw) throw new NotFoundError("Không tìm thấy hành khách");
+        return new HanhKhachBO(hanhKhachRaw);
     }
     async taoHanhKhach(data){
         if(data.cmnd&&(await this.repo.layHanhKhachTheoCMND(data.cmnd))) throw new ValidationError("CMND đã tồn tại");

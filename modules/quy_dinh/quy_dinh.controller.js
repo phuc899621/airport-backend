@@ -40,3 +40,16 @@ export const layQuyDinh = async (req, res, next) => {
         errorHandler(res, err);
     }
 }
+export const layQuyDinhTheoTen = async (req, res, next) => {
+    try {
+        const {tenQuyDinh}=req.params;
+        const quyDinh=await quyDinhService.layQuyDinhTheoTen(tenQuyDinh,db.tx);
+        res.status(200).json({
+            success: true,
+            message: "Lấy quy định theo tên thành công!",
+            data: quyDinh
+        }); 
+    } catch (err) {
+        errorHandler(res, err);
+    }
+}

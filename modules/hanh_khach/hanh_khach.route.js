@@ -12,6 +12,7 @@ router.get("/",
 router.get("/:maHanhKhach", 
     validate(HanhKhachValidator.layHanhKhachParamsSchema,ValidateOption.PARAMS),
     HanhKhachController.layHanhKhach);
+router.get("/cmnd/:cmnd",HanhKhachController.layHanhKhachTheoCMND)
 router.post("/", 
     validate(HanhKhachValidator.taoHanhKhachBodySchema),HanhKhachController.taoHanhKhach); 
 router.delete("/:maHanhKhach", 

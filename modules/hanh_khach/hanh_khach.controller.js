@@ -19,6 +19,20 @@ export const layHanhKhach = async (req, res) => {
     }
 };
 
+export const layHanhKhachTheoCMND = async (req, res) => {
+    try{
+        const {cmnd}=req.params;
+        const hanhKhach=await hanhKhachService.layHanhKhachTheoCMND(cmnd);
+        res.status(200).json({
+            success: true,
+            message: "Lấy hành khách thành công!",
+            data: hanhKhach
+        }); 
+    }catch(err){
+        errorHandler(res, err);
+    }
+};
+
 export const taoHanhKhach = async (req, res) => {
     try{
         const hanhKhach=await hanhKhachService.taoHanhKhach(req.body);
