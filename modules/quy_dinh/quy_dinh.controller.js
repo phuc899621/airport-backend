@@ -47,7 +47,7 @@ export const layQuyDinhTheoTen = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Lấy quy định theo tên thành công!",
-            data: quyDinh
+            data: quyDinh.giaTri
         }); 
     } catch (err) {
         errorHandler(res, err);
