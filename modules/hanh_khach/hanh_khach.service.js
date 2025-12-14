@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError } from "../../core/errors/errors.js";
+import { NotFoundError, ServerError, ValidationError } from "../../core/errors/errors.js";
 import HanhKhachBO from "./hanh_khach.bo.js";
 
 export default class HanhKhachService {
