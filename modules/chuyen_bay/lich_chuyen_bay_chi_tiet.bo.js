@@ -8,6 +8,9 @@ export default class LichChuyenBayChiTietBO{
         NgayGio=null,
         TenSBDi=null,
         TenSBDen=null,
+        TongSoGhe=null,
+        TongSoGheDaDat=null,
+        TongSoGheConLai=null,
         SanBayTrungGian=[],
         HangVeChuyenBay=[]
     }){
@@ -20,8 +23,12 @@ export default class LichChuyenBayChiTietBO{
         this.maSanBayDen=MaSBDen;
         this.tenSanBayDi=TenSBDi;
         this.tenSanBayDen=TenSBDen;
+        this.tongSoGhe=parseInt(TongSoGhe);
+        this.tongSoGheDaDat=parseInt(TongSoGheDaDat);
+        this.tongSoGheConLai=parseInt(TongSoGheConLai);
         this.sanBayTrungGian=SanBayTrungGian;
         this.hangVeChuyenBay=HangVeChuyenBay;
+        
         this._sbTGSet=new Set();
         this._hangVeSet=new Set();
     }

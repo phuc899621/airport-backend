@@ -120,12 +120,17 @@ export default class ChuyenBayRepo{
                     ROUND(cb."GiaVe" * hv."HeSoGia") AS "GiaVeTheoHang",
                     (hvcb."TongSoGhe" - COALESCE(vd."SoVeDaDat", 0)) AS "SoGheConLai",
 
+                    
+                    tsg."TongSoGhe",            
+                    tsg."TongSoGheDaDat",      
+                    tsg."TongSoGheConLai",       
                     sbtg."MaSB",
                     sb."TenSB",
                     sb."QuocGia",
                     sbtg."ThuTuDung",
                     sbtg."ThoiGianDung",
                     sbtg."GhiChu"
+                    
                     
                 FROM "CHUYENBAY" cb
                 LEFT JOIN "SANBAY" AS sbDi
@@ -145,6 +150,20 @@ export default class ChuyenBayRepo{
                     GROUP BY "MaCB","MaHV"
                 ) vd ON vd."MaCB" = cb."MaCB"
                   AND vd."MaHV"=hv."MaHV"
+                LEFT JOIN (
+                SELECT hvcb."MaCB",
+                    SUM(hvcb."TongSoGhe") AS "TongSoGhe",
+                    SUM(COALESCE(vd."SoVeDaDat",0)) AS "TongSoGheDaDat",
+                    SUM(hvcb."TongSoGhe") - SUM(COALESCE(vd."SoVeDaDat",0)) AS "TongSoGheConLai"
+                FROM "HANGVECHUYENBAY" hvcb
+                LEFT JOIN (
+                    SELECT "MaCB","MaHV", COUNT(*) AS "SoVeDaDat"
+                    FROM "VECHUYENBAY"
+                    WHERE "TrangThai" <> 'da_huy'
+                    GROUP BY "MaCB","MaHV"
+                ) vd ON vd."MaCB" = hvcb."MaCB" AND vd."MaHV" = hvcb."MaHV"
+                GROUP BY hvcb."MaCB"
+            ) tsg ON tsg."MaCB" = cb."MaCB"
                 WHERE 1=1 
                 AND cb."DaXoa" = false
                 ${maChuyenBay ? executor`AND cb."MaCB" = ${maChuyenBay}` : executor``}
