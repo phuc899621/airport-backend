@@ -7,6 +7,7 @@ import session from "express-session";
 import setupSwagger from "./docs/swagger.js";
 import HanhKhachRouter from "./modules/hanh_khach/hanh_khach.route.js";
 import VeRouter from "./modules/ve/ve.route.js";
+import BaoCaoRouter from "./modules/bao_cao/bao_cao.route.js";
 const app = express();
 const PORT = 3000;
 
@@ -33,6 +34,7 @@ app.use("/san-bay", SanBayRouter);
 app.use("/hanh-khach", HanhKhachRouter);
 app.use("/quy-dinh", QuyDinhRouter);
 app.use("/ve", VeRouter);
+app.use("/bao-cao", BaoCaoRouter);
 
 
 app.get("/", async (req, res) => {
