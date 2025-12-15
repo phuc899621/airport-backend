@@ -1,70 +1,92 @@
-import { NotFoundError, ServerError } from "../../core/errors/errors.js";
-import VeBO from "./ve.bo.js";
+// ve.service.js
+import { DBError, NotFoundError, ServerError, ValidationError } from "../../core/errors/errors.js";
+import { VeMapper } from "./ve.mapper.js";
 
-export class VeService {
-    constructor(veRepo, chuyenBayService, hangVeRepo) {
-        this.repo = veRepo;
-        this.chuyenBayService = chuyenBayService;
-        this.hangVeRepo = hangVeRepo;
-    }
-    async layVe(){
-        const result = await this.repo.layVe();
-        return result.map(item=>new VeBO(item));
-    }
+const createVeService = (veRepo, chuyenBayService, hangVeService,quyDinhService) => {
 
-    async thanhToanVe(maVe){
-        const data={};
-        data["TrangThai"]='da_mua';
-        const result = await this.repo.capNhatVe(maVe,data);
-        console.log(result);
-        return result?new VeBO(result):null;
-    }
-    async huyVe(maVe){
-        const result = await this.repo.huyVe(maVe);
-        console.log(result);
-        return result?new VeBO(result):null;
-    }
-
-    async muaVe(data) {
-        const { maChuyenBay } = data;
-        console.log(maChuyenBay);
-        const chuyenBay = await this.chuyenBayService.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
-        if (!chuyenBay) throw new NotFoundError("Không tìm thấy chuyen bay");
-        console.log(chuyenBay);
-        const dsHangVe=chuyenBay.hangVeChuyenBay || [];
-        if(dsHangVe.length===0) throw new NotFoundError("Không tìm thấy hạng vé");
-        const hv=dsHangVe.find(hv=>hv.maHangVe===data.maHangVe);
-        const giaVe=chuyenBay.giaVeCoBan*hv.heSoGia;
-        console.log(hv);
-        console.log(giaVe);
-        data.giaTien=giaVe;
-        const maVe=await this.taoMaVe();
-        data.maVe=maVe;
-        const result = await this.repo.taoVeMua(data);
+    const kiemTraVeChuaTonTai = async (maVe) => {
+        const result = await veRepo.layVeTheoMaVe(maVe);
+        if(!result) throw new NotFoundError("Vé không tồn tại");
         return result;
     }
-    async datVe(data) {
-        const { maChuyenBay } = data;
-        console.log(maChuyenBay);
-        const chuyenBay = await this.chuyenBayService.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
-        if (!chuyenBay) throw new NotFoundError("Không tìm thấy chuyen bay");
-        console.log(chuyenBay);
-        const dsHangVe=chuyenBay.hangVeChuyenBay || [];
-        if(dsHangVe.length===0) throw new NotFoundError("Không tìm thấy hạng vé");
-        const hv=dsHangVe.find(hv=>hv.maHangVe===data.maHangVe);
-        const giaVe=chuyenBay.giaVeCoBan*hv.heSoGia;
-        console.log(hv);
-        console.log(giaVe);
-        data.giaTien=giaVe;
-        const maVe=await this.taoMaVe();
-        data.maVe=maVe;
-        const result = await this.repo.taoVeDat(data);
-        return result;
-    }
-    async taoMaVe(){
-        const next_id= await this.repo.laySTTVeTiepTheo();
+    const layVe = async () => {
+        const result = await veRepo.layVe();
+        console.log(result);
+        return result.map(VeMapper.toResponse);
+    };
+
+    const thanhToanVe = async (maVe) => {
+        await kiemTraVeChuaTonTai(maVe);
+        const result = await veRepo.thanhToanVe(maVe);
+        return result ? VeMapper.toResponse(result) : null;
+    };
+
+    const huyVe = async (maVe) => {
+        const veRaw= await kiemTraVeChuaTonTai(maVe);
+        console.log(veRaw);
+        if(veRaw.TrangThai === "da_mua") throw new ValidationError("Vé đã mua, không thể hủy");
+        await chuyenBayService.kiemTraChuyenBayDaBay(veRaw.MaCB);
+        const result = await veRepo.huyVe(maVe);
+        console.log(result);
+
+        return result ? VeMapper.toResponse(result) : null;
+    };
+
+    const muaVe = async (data) => {
+        const { maChuyenBay, maHangVe } = data;
+        await chuyenBayService.kiemTraChuyenBayKhongTonTai(maChuyenBay);
+        await hangVeService.kiemTraHangVeKhongTonTai(maHangVe);
+        await chuyenBayService.kiemTraHetCho(maChuyenBay, maHangVe);
+        await chuyenBayService.kiemTraChuyenBayDaBay(maChuyenBay);
+
+        const giaTienDaTinh= await veRepo.layGiaTienDaTinh(maChuyenBay, maHangVe);
+        if(!giaTienDaTinh) throw new DBError("Không lấy được giá tiền");
+        console.log(giaTienDaTinh);
+        data.giaTien = giaTienDaTinh;
+        const maVe = await taoMaVe();
+        data.maVe = maVe;
+
+        const result = await veRepo.taoVeMua(data);
+        return result ? VeMapper.toResponse(result) : null;
+    };
+
+    const datVe = async (data) => {
+        const { maChuyenBay, maHangVe } = data;
+        const chuyenBay= await chuyenBayService.kiemTraChuyenBayKhongTonTai(maChuyenBay);
+        await hangVeService.kiemTraHangVeKhongTonTai(maHangVe);
+        await chuyenBayService.kiemTraHetCho(maChuyenBay, maHangVe);
+        await chuyenBayService.kiemTraChuyenBayDaBay(maChuyenBay);
+
+        const ngayKhoiHanh=chuyenBay.NgayGio;
+        await quyDinhService.kiemTraKhongTheDatVe(ngayKhoiHanh);
+        const giaTienDaTinh= await veRepo.layGiaTienDaTinh(maChuyenBay, maHangVe);
+        if(!giaTienDaTinh) throw new DBError("Không lấy được giá tiền");
+
+        data.giaTien = giaTienDaTinh;
+        const maVe = await taoMaVe();
+        data.maVe = maVe;
+        const result = await veRepo.taoVeDat(data);
+        return result ? VeMapper.toResponse(result) : null;
+    };
+
+    const taoMaVe = async () => {
+        const next_id = await veRepo.laySTTTiepTheo();
         console.log(next_id);
-        if(!next_id) throw new ServerError("Không thể tạo mã hành khách");
+
+        if (!next_id)
+            throw new ServerError("Không thể tạo mã hành khách");
+
         return `VB${String(next_id).padStart(3, '0')}`;
-    }
-}
+    };
+
+    return {
+        layVe,
+        thanhToanVe,
+        huyVe,
+        muaVe,
+        datVe,
+        taoMaVe
+    };
+};
+
+export default createVeService;

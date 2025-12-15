@@ -1,60 +1,32 @@
-import db from "../../core/config/db.js";
-import HanhKhachRepo from "./hanh_khach.repo.js";
-import HanhKhachService from "./hanh_khach.service.js";
-import {errorHandler} from "../../core/errors/error_handler.js";
+import { errorHandler } from "../../core/errors/error_handler.js";
 
-const hanhKhachService = new HanhKhachService(new HanhKhachRepo(db));
+ const createHanhKhachController = (hanhKhachService) => ({
+  layHanhKhach: async (req, res) => {
+    try {
+      const { maHanhKhach } = req.params;
+      const hanhKhach = await hanhKhachService.layHanhKhach(maHanhKhach, req.query);
+      res.status(200).json({
+        success: true,
+        message: "Lấy hành khách thành công!",
+        data: hanhKhach,
+      });
+    } catch (err) {
+      errorHandler(res, err);
+    }
+  },
 
-export const layHanhKhach = async (req, res) => {
-    try{
-        const {maHanhKhach}=req.params;
-        const hanhKhach=await hanhKhachService.layHanhKhach(maHanhKhach,req.query);
-        res.status(200).json({
-            success: true,
-            message: "Lấy hành khách thành công!",
-            data: hanhKhach
-        }); 
-    }catch(err){
-        errorHandler(res, err);
+  taoHanhKhach: async (req, res) => {
+    try {
+      const hanhKhach = await hanhKhachService.taoHanhKhach(req.body);
+      res.status(201).json({
+        success: true,
+        message: "Tạo hành khách thành công!",
+        data: hanhKhach,
+      });
+    } catch (err) {
+      errorHandler(res, err);
     }
-};
+  },
+});
 
-export const layHanhKhachTheoCMND = async (req, res) => {
-    try{
-        const {cmnd}=req.params;
-        const hanhKhach=await hanhKhachService.layHanhKhachTheoCMND(cmnd);
-        res.status(200).json({
-            success: true,
-            message: "Lấy hành khách thành công!",
-            data: hanhKhach
-        }); 
-    }catch(err){
-        errorHandler(res, err);
-    }
-};
-
-export const taoHanhKhach = async (req, res) => {
-    try{
-        const hanhKhach=await hanhKhachService.taoHanhKhach(req.body);
-        res.status(201).json({
-            success: true,
-            message: "Tạo hành khách thành công!",
-            data: hanhKhach
-        }); 
-    }catch(err){
-        errorHandler(res, err);
-    }
-};
-export const xoaHanhKhach = async (req, res) => {
-    try{
-        const {maHanhKhach}=req.params;
-        const hanhKhach=await hanhKhachService.xoaHanhKhach(maHanhKhach);
-        res.status(200).json({
-            success: true,
-            message: "Xóa hành khách thành công!",
-            data: hanhKhach
-        }); 
-    }catch(err){
-        errorHandler(res, err);
-    }
-};
+export default createHanhKhachController;

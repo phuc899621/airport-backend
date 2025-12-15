@@ -1,78 +1,62 @@
-export default class HangVeChuyenBayRepo{
-    constructor(db){
-        this.db = db;
-    }
-    async layHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx) {
-        const executor = tx || this.db;
+export const createHangVeChuyenBayRepo = (db) => ({
+    layHangVeChuyenBayTheoMaChuyenBay: async (maChuyenBay, tx) => {
+        const executor = tx || db;
         const result = await executor`
-            SELECT *
-            FROM "HANGVECHUYENBAY" hvcb
-            JOIN "HANGVE" hv ON hv."MaHV" = hvcb."MaHV"
-            WHERE hvcb."MaCB" = ${maChuyenBay};
+        SELECT *
+        FROM "HANGVECHUYENBAY" hvcb
+        JOIN "HANGVE" hv ON hv."MaHV" = hvcb."MaHV"
+        WHERE hvcb."MaCB" = ${maChuyenBay};
         `;
         return result;
-    }
-    async layHangVeChuyenBay(maChuyenBay, maHangVe, tx) {
-        const executor = tx || this.db;
+    },
+
+    layHangVeChuyenBay: async (maChuyenBay, maHangVe, tx) => {
+        const executor = tx || db;
         const result = await executor`
-            SELECT *
-            FROM "HANGVECHUYENBAY" hvcb
-            JOIN "HANGVE" hv ON hv."MaHV" = hvcb."MaHV"
-            WHERE hvcb."MaCB" = ${maChuyenBay} AND hvcb."MaHV" = ${maHangVe};
+        SELECT *
+        FROM "HANGVECHUYENBAY" hvcb
+        JOIN "HANGVE" hv ON hv."MaHV" = hvcb."MaHV"
+        WHERE hvcb."MaCB" = ${maChuyenBay} AND hvcb."MaHV" = ${maHangVe};
         `;
         return result[0] || null;
-    }
-    async capNhatHangVeChuyenBay(maChuyenBay, maHangVe,data, tx) {
-        const executor = tx || this.db;
-        const columns = Object.keys(data);
+    },
+
+    taoHangVeChuyenBay: async (data, tx) => {
+        const { maChuyenBay, maHangVe, tongSoGhe } = data;
+        const executor = tx || db;
         const rows = await executor`
-            WITH updated AS (
-                UPDATE "HANGVECHUYENBAY"
-                SET ${executor(data, columns)}
-                WHERE "MaCB" = ${maChuyenBay} AND "MaHV" = ${maHangVe}
-                RETURNING *
-            )
-            SELECT 
-            u.*,
+        WITH inserted AS (
+            INSERT INTO "HANGVECHUYENBAY" ("MaCB", "MaHV", "TongSoGhe")
+            VALUES (${maChuyenBay}, ${maHangVe}, ${tongSoGhe})
+            RETURNING *
+        )
+        SELECT 
+            i.*,
             hv."TenHV",
             hv."HeSoGia"
-            FROM updated u
-            JOIN "HANGVE" hv ON hv."MaHV" = u."MaHV";
+        FROM inserted i
+        JOIN "HANGVE" hv ON hv."MaHV" = i."MaHV";
         `;
         return rows[0] || null;
-    }
-    async taoHangVeChuyenBay(data, tx) {
-        const { maChuyenBay, maHangVe, tongSoGhe } = data;
-        const executor = tx || this.db;
-        const rows = await executor`
-            WITH inserted AS (
-                INSERT INTO "HANGVECHUYENBAY" ("MaCB", "MaHV", "TongSoGhe")
-                VALUES (${maChuyenBay}, ${maHangVe}, ${tongSoGhe})
-                RETURNING *
-            )
-            SELECT 
-                i.*,
-                hv."TenHV",
-                hv."HeSoGia"
-            FROM inserted i
-            JOIN "HANGVE" hv ON hv."MaHV" = i."MaHV";
-        `;
-        return rows[0] || null;
-    }
-    async xoaHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx) {
-        const executor = tx || this.db;
-        const rows = await executor`
-            DELETE FROM "HANGVECHUYENBAY"
-            WHERE "MaCB" = ${maChuyenBay} RETURNING *;
-        `;
-        return rows[0] || null;
-    }
-    async xoaHangVeChuyenBayTheoMaHangVe(maChuyenBay, maHangVe, tx) {
-        const executor = tx || this.db;
-        const rows = await executor`
-            DELETE FROM "HANGVECHUYENBAY"
-            WHERE "MaCB" = ${maChuyenBay} AND "MaHV" = ${maHangVe} RETURNING *;
-        `;
-        return rows[0] || null;
-    }
-}
+    },
+    taoNhieuHangVeChuyenBay: async (data, tx) => {
+        try {
+            const executor = tx || db;
+            const {maChuyenBay, hangVes} = data;
+            const values=hangVes.map((hv)=>({
+                MaCB:maChuyenBay,
+                MaHV:hv.maHangVe,
+                TongSoGhe:hv.tongSoGhe
+            }));
+            const rows = await executor`
+                INSERT INTO "HANGVECHUYENBAY" 
+                ${executor(values, 'MaCB', 'MaHV', 'TongSoGhe')} RETURNING *;
+            `;
+            return rows;
+        } catch (err) {
+        throw new DBError(err.message);
+        }
+    },
+});
+
+export default createHangVeChuyenBayRepo;

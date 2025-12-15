@@ -1,239 +1,155 @@
 import { ConflictError, NotFoundError, ServerError, ValidationError } from "../../core/errors/errors.js";
-import ChuyenBayBO from "./chuyen_bay.bo.js";
-import HangVeChuyenBayChiTietBO from "./hang_ve_chuyen_bay_chi_tiet.bo.js";
-import HangVeChuyenBayBO from "./hang_ve_chuyen_bay.bo.js";
-import LichChuyenBayBO from "./lich_chuyen_bay.bo.js";
-import SanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
-import LichSanBayTrungGianBO from "./san_bay_trung_gian.bo.js";
-import SanBayTrungGianChiTietBO from "./san_bay_trung_gian_chi_tiet.bo.js";
-import LichChuyenBayChiTietBO from "./lich_chuyen_bay_chi_tiet.bo.js";
-import db from "../../core/config/db.js";
-import createHangVeRepo from "../hang_ve/hang_ve.repo.js";
-const hangVeRepo=createHangVeRepo(db);
-export default class ChuyenBayService{
-    constructor(chuyenBayRepo, sanBayRepo,sanBayTrungGianRepo,hangVeChuyenBayRepo,hangVeRepo){
-        this.repo=chuyenBayRepo;
-        this.sanBayRepo=sanBayRepo;
-        this.sanBayTrungGianRepo=sanBayTrungGianRepo;
-        this.hangVeChuyenBayRepo=hangVeChuyenBayRepo;
-        this.hangVeRepo=hangVeRepo;
-    }
-    async layLichChuyenBay(maChuyenBay,filter) {
-        const result = await this.repo.layLichChuyenBay(maChuyenBay,filter);
-        const lichChuyenBayMap=new Map();   
-        console.log(result);
-        for(const cb of result){
-            const maChuyenBay=cb.MaCB;
-            if(!lichChuyenBayMap.has(maChuyenBay)){
-                lichChuyenBayMap.set(maChuyenBay,
-                new LichChuyenBayBO(cb));
-            }
-        }
-        console.log(lichChuyenBayMap); 
-        if(maChuyenBay){
-            if(lichChuyenBayMap.size===0) return null;
-            return lichChuyenBayMap.get(maChuyenBay) ?? null;
-        }
-        return Array.from(lichChuyenBayMap.values());
-    }
-    async layLichChuyenBayTheoMaChuyenBay(maChuyenBay){
-        const result = await this.repo.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
-        const lichChuyenBayMap=new Map();   
-        console.log(result);
-        for(const cb of result){
-            const maChuyenBay=cb.MaCB;
-            if(!lichChuyenBayMap.has(maChuyenBay)){
-                lichChuyenBayMap.set(maChuyenBay,
-                new LichChuyenBayChiTietBO(cb));
-            }
-            if(cb.MaSB){
-                lichChuyenBayMap.get(maChuyenBay).themSanBayTrungGian(maChuyenBay,new SanBayTrungGianBO(cb));
-            }
-            if(cb.MaHV){
-                lichChuyenBayMap.get(maChuyenBay).themHangVeChuyenBay(maChuyenBay,new HangVeChuyenBayChiTietBO(cb));
-            }
-        }
-        console.log(lichChuyenBayMap); 
-        if(maChuyenBay){
-            if(lichChuyenBayMap.size===0) return null;
-            return lichChuyenBayMap.get(maChuyenBay) ?? null;
-        }
-        return Array.from(lichChuyenBayMap.values());
-    }
-    async taoChuyenBay(data){
-        const {maSanBayDi, maSanBayDen,thoiGianBay}=data;
-        //kiem tra ma san bay co ton tai
-        const sanBayDiRaw=await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDi);
-        const sanBayDenRaw=await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDen);
-        if(!sanBayDiRaw) throw new NotFoundError("Mã sân bay đi không tồn tại");
-        if(!sanBayDenRaw) throw new NotFoundError("Mã sân bay đến không tồn tại");
-
-        //kiem tra rang buoc thoi gian bay
-        const thoiGianBayToiThieu = await this.repo.layThoiGianBayToiThieu();
-        if(!thoiGianBayToiThieu) throw new ValidationError("Không kiểm tra được thời gian bay");
-        if(thoiGianBay<thoiGianBayToiThieu) throw new ValidationError(`Thời gian bay phải lớn hơn ${thoiGianBayToiThieu} phút`);
-        
-        //kiem tra ma chuyen bay tao ra ko trung
-        data.maChuyenBay=await this.taoMaCB();
-        if(await this.repo.layChuyenBayTheoMaChuyenBay(data.maChuyenBay)) throw new ConflictError("Mã chuyển bay tạo bị trùng");
-        const result=  await this.repo.taoChuyenBay(data);
-        return result? new ChuyenBayBO(result):null;
-    }
-    async layChuyenBay(maChuyenBay){
-        if(maChuyenBay) {
-            const chuyenBayRaw=await this.repo.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
-            return chuyenBayRaw? new LichChuyenBayBO(chuyenBayRaw):null;
-        }
-        return null;
-    }
-    async laySanBayTrungGian(maChuyenBay, maSanBay) {
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        if(maSanBay) {
-            const sanBayTrungGianRaw=await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay);
-            return sanBayTrungGianRaw? new SanBayTrungGianChiTietBO(sanBayTrungGianRaw):null;
-        }
-        const dsSanBayTrungGianRaw=await this.sanBayTrungGianRepo.laySanBayTrungGianTheoMaChuyenBay(maChuyenBay);
-        return dsSanBayTrungGianRaw.map(sanBayTrungGianRaw=>new SanBayTrungGianChiTietBO(sanBayTrungGianRaw));
-    }
-    async taoSanBayTrungGian(data){
-        const {maChuyenBay, maSanBay}=data;
-        //Kiem tra maChuyenBay, maSanBay hop le
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        if(!(await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBay))) throw new NotFoundError("Sân bay không tồn tại");
-        if(await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay)) throw new ValidationError("Sân bay trung gian đã tồn tại");
-        //Kiem tra thoi gian dung va san bay toi da
-        const tgdMin=await this.sanBayTrungGianRepo.layThoiGianDungToiThieu();
-        const tgdMax=await this.sanBayTrungGianRepo.layThoiGianDungToiDa();
-        if(!tgdMin||!tgdMax) throw new ValidationError("Không kiểm tra được thời gian dừng");
-        if(data.thoiGianDung&&(data.thoiGianDung<tgdMin||data.thoiGianDung>tgdMax)) throw new ValidationError("Thời gian dừng chỉ thuộc khoảng 10-20 phút");
-        const soLuongSBTGToiDa=await this.sanBayTrungGianRepo.laySanBayTrungGianToiDa();
-        if(!soLuongSBTGToiDa) throw new ValidationError("Không kiểm tra được số lượng sân bay trung gian");
-        const sanBayTrungGianHienTai=await this.sanBayTrungGianRepo.laySanBayTrungGianTheoMaChuyenBay(maChuyenBay);
-        if(sanBayTrungGianHienTai.length>=soLuongSBTGToiDa) throw new ValidationError("Số lượng sân bay trung gian đã đặt tối đa");
-        if(sanBayTrungGianHienTai.length==1&&(sanBayTrungGianHienTai[0].maSanBay==maSanBay)) throw new ConflictError("Chuyến bay không thể có 2 sân bay trung gian giống nhau");
-        const result=  await this.sanBayTrungGianRepo.taoSanBayTrungGian(data);
-        return result? new SanBayTrungGianBO(result):null;
-    }
-    async capNhatSanBayTrungGian(maChuyenBay,maSanBay,update){
-         //Kiem tra thoi gian dung va san bay toi da
-        const tgdMin=await this.sanBayTrungGianRepo.layThoiGianDungToiThieu();
-        const tgdMax=await this.sanBayTrungGianRepo.layThoiGianDungToiDa();
-        if(!tgdMin||!tgdMax) throw new ValidationError("Không kiểm tra được thời gian dừng");
-        if(update.thoiGianDung&&(update.thoiGianDung<tgdMin||update.thoiGianDung>tgdMax)) throw new ValidationError("Thời gian dừng chỉ thuộc khoảng 10-20 phút");
-        const fieldMap={
-            thoiGianDung:"ThoiGianDung",
-            ghiChu:"GhiChu"
-        }
-        const data={};
-        if(maChuyenBay&&maSanBay&&!(await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay))) {
-            throw new NotFoundError("Sân bay trung gian không tồn tại");
-        }
-        if(maChuyenBay&&!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) {
+import { ChuyenBayMapper } from "./chuyen_bay.mapper.js";
+const createChuyenBayService = (
+  chuyenBayRepo,
+  sanBayTrungGianRepo,
+  hangVeChuyenBayRepo,
+  sanBayService,
+  hangVeService,
+  quyDinhService,
+  db
+) => {
+    const kiemTraChuyenBayKhongTonTai = async (maChuyenBay) => {
+        const result=await chuyenBayRepo.layChuyenBayTheoMaChuyenBay(maChuyenBay);
+        if (!result){
             throw new NotFoundError("Chuyến bay không tồn tại");
         }
-        if(maSanBay&&!(await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBay))) {
-            throw new NotFoundError("Sân bay không tồn tại");
+        return result;
+    }
+    const kiemTraChuyenBayDaBay= async (maChuyenBay) => {
+        const result = await chuyenBayRepo.layChuyenBayTheoMaChuyenBay(maChuyenBay);
+        const thoiGianKhoiHanh=new Date(result.NgayGio);
+        console.log(thoiGianKhoiHanh);
+        const thoiGianHienTai=new Date(Date.now());
+        console.log(thoiGianHienTai);
+        if(thoiGianKhoiHanh<=thoiGianHienTai){
+            throw new ValidationError("Chuyến bay đã bay hoặc đã kết thúc, không thể mua hoặc hủy vé");
         }
-        for (const [key,column] of Object.entries(fieldMap)) {
-            if (update[key] !== undefined) {
-                console.log("capnhat:",key,column,update[key]);
-                data[column]=update[key];
+    }
+    const kiemTraSanBayTrungGianDaTonTai = async (maChuyenBay, maSanBay) => {
+        if (await sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay, maSanBay)){
+            throw new ValidationError("Sân bay trung gian đã tồn tại");
+        }
+        return true;
+    }
+    const kiemTraHetCho = async (maChuyenBay, maHangVe) => {
+        const soGheConLai = await chuyenBayRepo.laySoGheConLai(maChuyenBay, maHangVe);
+        if(soGheConLai === 0) throw new ValidationError(`Hạng vé ${maHangVe} của chuyến bay ${maChuyenBay} đã hết chỗ`);
+    }
+    const kiemTraHangVeChuyenBayDaTonTai = async (maChuyenBay, maHangVe) => {
+        if (await hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe)){
+            throw new ValidationError("Hạng vé chuyến bay đã tồn tại");
+        }
+        return true;
+    }
+    const layLichChuyenBay = async (maChuyenBay, filter) => {
+        const result = await chuyenBayRepo.layLichChuyenBay(maChuyenBay, filter);
+        return ChuyenBayMapper.toLichChuyenBayList(result, maChuyenBay);
+    };
+
+    const layLichChuyenBayTheoMaChuyenBay = async (maChuyenBay) => {
+        const result = await chuyenBayRepo.layLichChuyenBayTheoMaChuyenBay(maChuyenBay);
+        console.log(result);
+        const lichChuyenBayMap = ChuyenBayMapper.toLichChiTietMap(result);
+        if (maChuyenBay) {
+            const lichChuyenBay= lichChuyenBayMap.get(maChuyenBay);
+            if (!lichChuyenBay){
+                throw new NotFoundError("Lịch chuyến bay không tồn tại");
             }
         }
-        if(Object.keys(data).length===0) throw new ValidationError("Vui lòng gửi trường để cập nhật");
-        return new SanBayTrungGianBO(await this.sanBayTrungGianRepo.capNhatSanBayTrungGian(maChuyenBay,maSanBay, data));
-    }
+        return ChuyenBayMapper.toArray(lichChuyenBayMap);
+    };
 
+    const taoChuyenBay = async (data) => {
+        await db.begin(async (tx) => {
+            const { maSanBayDi, maSanBayDen, 
+                thoiGianBay, giaVeCoBan, sanBayTrungGians, hangVes } = data;
+            await sanBayService.kiemTraSanBayTonTai(maSanBayDi);
+            await sanBayService.kiemTraSanBayTonTai(maSanBayDen);
+            await quyDinhService.kiemTraThoiGianBay(thoiGianBay);
 
-
-    async capNhatChuyenBay(maChuyenBay, update={}){
-        const {maSanBayDi, maSanBayDen, ngayGio, giaVe, thoiGianBay }=update;
-        const fieldMap={
-            maSanBayDi:'MaSBDi',
-            maSanBayDen:'MaSBDen',
-            ngayGio:'NgayGio',
-            giaVe:'GiaVe',
-            thoiGianBay:'ThoiGianBay',
-        }
-        const data={};
-        if(maChuyenBay&&!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) {
-            throw new NotFoundError("Chuyến bay không tồn tại");
-        }
-        if(maSanBayDi&&!(await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDi))) {
-            throw new NotFoundError("Sân bay đi không tồn tại");
-        }
-        if(maSanBayDen&&!(await this.sanBayRepo.laySanBayTheoMaSanBay(maSanBayDen))) {
-            throw new NotFoundError("Sân bay đến không tồn tại");
-        }
-        const thoiGianBayToiThieu = await this.repo.layThoiGianBayToiThieu();
-        if(!thoiGianBayToiThieu) throw new ValidationError("Không kiểm tra được thời gian bay");
-        if(thoiGianBay&&thoiGianBay<thoiGianBayToiThieu) throw new ValidationError(`Thời gian bay phải lớn hơn ${thoiGianBayToiThieu} phút`);
-        for (const [key,column] of Object.entries(fieldMap)) {
-            if (update[key] !== undefined) {
-                console.log("capnhat:",key,column,update[key]);
-                data[column]=update[key];
+            data.maChuyenBay = await taoMaCB();
+            const result = await chuyenBayRepo.taoChuyenBay(data, tx);
+            if(!result||!result.MaCB){
+                throw new ServerError("Tạo chuyến bay thất bại");
             }
-        }
-        if(Object.keys(data).length===0) throw new ValidationError("Vui lòng gửi trường để update");
-        const result= await this.repo.capNhatChuyenBay(maChuyenBay, data);
-        return result? new ChuyenBayBO(result):null;
-    }
-    async xoaChuyenBay(maChuyenBay){
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        await this.repo.xoaChuyenBay(maChuyenBay);
-    }
-    async xoaSanBayTrungGian(maChuyenBay,maSanBay){
-        if(!(await this.sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay,maSanBay))) throw new NotFoundError("Sân bay trung gian không tồn tại");
-        await this.sanBayTrungGianRepo.xoaSanBayTrungGian(maChuyenBay,maSanBay);
-    }
+            const maChuyenBay= result.MaCB;
+            if(sanBayTrungGians&&sanBayTrungGians.length>0){
+                for(const sbtg of sanBayTrungGians){
+                    await sanBayService.kiemTraSanBayTonTai(sbtg.maSanBay);
+                    await quyDinhService.kiemTraThoiGianDung(sbtg.thoiGianDung);
+                }
+                await sanBayTrungGianRepo.taoNhieuSanBayTrungGian({maChuyenBay,sanBayTrungGians },tx)
+            }
+            for(const hv of hangVes){
+                await hangVeService.kiemTraHangVeKhongTonTai(hv.maHangVe);
+                await kiemTraHangVeChuyenBayDaTonTai(maChuyenBay, hv.maHangVe);
+            }
+            await hangVeChuyenBayRepo.taoNhieuHangVeChuyenBay({maChuyenBay,hangVes },tx);
+            
+        });
+    };
+    
 
-    async taoMaCB(){
-        const next_id=await this.repo.laySTTChuyenBayTiepTheo();
-        console.log(next_id);
-        if(!next_id) throw new ServerError("Không thể tạo mã chuyển bay");
-        return `CB${String(next_id).padStart(3, '0')}`;
+    const taoMaCB = async () => {
+        const next_id = await chuyenBayRepo.laySTTTiepTheo();
+        if (!next_id) throw new ServerError("Không thể tạo mã chuyển bay");
+        return `CB${String(next_id).padStart(3, "0")}`;
+    };
+    const laySanBayTrungGian = async (maChuyenBay, maSanBay) => {
+        await kiemTraChuyenBayKhongTonTai(maChuyenBay);
+
+        if (maSanBay) {
+            const sbRaw = await sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay, maSanBay);
+            if(!sbRaw) throw new NotFoundError("Sân bay trung gian không tồn tại");
+            return ChuyenBayMapper.toSanbayTrungGianChiTietResponse(sbRaw);
+        }
+        const dsRaw = await sanBayTrungGianRepo.laySanBayTrungGianTheoMaChuyenBay(maChuyenBay);
+        return dsRaw.map(ChuyenBayMapper.toSanbayTrungGianChiTietResponse);
+    };0
+
+
+    const taoSanBayTrungGian = async (data) => {
+        const { maChuyenBay, maSanBay, thoiGianDung } = data;
+
+        await kiemTraChuyenBayKhongTonTai(maChuyenBay);
+        await sanBayService.kiemTraSanBayTonTai(maSanBay);
+        await kiemTraSanBayTrungGianDaTonTai(maChuyenBay, maSanBay);
+        await quyDinhService.kiemTraThoiGianDung(thoiGianDung);
+
+        const sanBayTrungGianHienTai = await sanBayTrungGianRepo.laySanBayTrungGianTheoMaChuyenBay(maChuyenBay);
+        await quyDinhService.kiemTraSanBayTrungGian(sanBayTrungGianHienTai.length);
+
+        const result = await sanBayTrungGianRepo.taoSanBayTrungGian(data);
+        return result ? ChuyenBayMapper.toSanBayTrungGianResponse(result) : null;
+    };
+    const layHangVeChuyenBayTheoMaChuyenBay = async (maChuyenBay) => {
+        await kiemTraChuyenBayKhongTonTai(maChuyenBay);
+        const result = await hangVeChuyenBayRepo.layHangVeChuyenBayTheoMaChuyenBay(maChuyenBay);
+        return result.map(ChuyenBayMapper.toHangVeChuyenBayResponse);
     }
-    async layHangVeChuyenBay(maChuyenBay,tx){
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        const result= await this.hangVeChuyenBayRepo.layHangVeChuyenBayTheoMaChuyenBay(maChuyenBay,tx);
-        return result.map(item=>new HangVeChuyenBayBO(item));
-    }
-    async taoHangVeChuyenBay(data, tx) {
+    const taoHangVeChuyenBay = async (data) => {
         const { maChuyenBay, maHangVe } = data;
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
-        if(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx)) throw new ValidationError("Hạng vé chuyển bay đã tồn tại");
-        const result= await this.hangVeChuyenBayRepo.taoHangVeChuyenBay(data, tx);
-        return result? new HangVeChuyenBayBO(result):null;
-    }   
-    async capNhatHangVeChuyenBay(maChuyenBay, maHangVe, update={}, tx){
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
-        if(!(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx))) throw new NotFoundError("Hạng vé chuyển bay không tồn tại");
-        const fieldMap={
-            tongSoGhe:"TongSoGhe"
-        }
-        const data={};
-        for (const [key,column] of Object.entries(fieldMap)) {
-            if (update[key] !== undefined) {
-                console.log("capnhat:",key,column,update[key]);
-                data[column]=update[key];
-            }
-        }
-        if(Object.keys(data).length===0) throw new ValidationError("Vui lòng gửi trường để update");
+        await kiemTraChuyenBayKhongTonTai(maChuyenBay);
+        await hangVeService.kiemTraHangVeKhongTonTai(maHangVe);
+        await kiemTraHangVeChuyenBayDaTonTai(maChuyenBay, maHangVe);
+        const result = await hangVeChuyenBayRepo.taoHangVeChuyenBay(data);
+        return result ? ChuyenBayMapper.toHangVeChuyenBayResponse(result) : null;
+    };
 
-        const result= await this.hangVeChuyenBayRepo.capNhatHangVeChuyenBay(maChuyenBay, maHangVe, data, tx);
-        return result? new HangVeChuyenBayBO(result):null;
-    }
-    async xoaHangVeChuyenBayTheoMaHangVe(maChuyenBay, maHangVe, tx){
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        if(!(await this.hangVeRepo.layHangVeTheoMaHangVe(maHangVe))) throw new NotFoundError("Hạng vé không tồn tại");
-        if(!(await this.hangVeChuyenBayRepo.layHangVeChuyenBay(maChuyenBay, maHangVe, tx))) throw new NotFoundError("Hạng vé chuyển bay không tồn tại");
-        await this.hangVeChuyenBayRepo.xoaHangVeChuyenBayTheoMaHangVe(maChuyenBay, maHangVe, tx);
-    }
-    async xoaHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx){
-        if(!(await this.repo.layChuyenBayTheoMaChuyenBay(maChuyenBay))) throw new NotFoundError("Chuyến bay không tồn tại");
-        await this.hangVeChuyenBayRepo.xoaHangVeChuyenBayTheoMaChuyenBay(maChuyenBay, tx);
-    }
+  return {
+    kiemTraChuyenBayKhongTonTai,
+    layLichChuyenBay,
+    layLichChuyenBayTheoMaChuyenBay,
+    layHangVeChuyenBayTheoMaChuyenBay,
+    taoChuyenBay,
+    taoMaCB,
+    laySanBayTrungGian,
+    taoSanBayTrungGian,
+    taoHangVeChuyenBay,
+    kiemTraHetCho,
+    kiemTraChuyenBayDaBay
+  };
+};
 
-}
+export default createChuyenBayService;

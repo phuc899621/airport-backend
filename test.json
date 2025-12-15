@@ -1,0 +1,21 @@
+{
+  "maSanBayDi": "SB002",
+  "maSanBayDen": "SB003",
+  "ngayGio": "2025-12-20T08:30:00",
+  "thoiGianBay": 40,
+  "giaVeCoBan": 1500000,
+  "sanBayTrungGians": [
+    {
+      "maSanBay": "SB007",
+      "thuTuDung": 1,
+      "thoiGianDung": 20,
+      "ghiChu": "Tiếp nhiên liệu"
+    }
+  ],
+  "hangVes": [
+    {
+      "maHangVe": "HV001",
+      "tongSoGhe": 10
+    }
+  ]
+}
