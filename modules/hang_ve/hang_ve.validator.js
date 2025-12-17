@@ -6,7 +6,7 @@ export const createHangVeValidator = () => ({
     maHangVe: Joi.string().required().messages(stringMsg('Mã hạng vé', true))
   }),
   taoHangVeBody: Joi.object({
-    maHangVe: Joi.string().required().messages(stringMsg('Mã hạng vé', true)),
+    tenHangVe: Joi.string().required().messages(stringMsg('Tên hạng vé', true)),
     heSoGia: Joi.number().positive().required().messages(positiveFloatMsg('Hệ số giá', true))
   })
 });
