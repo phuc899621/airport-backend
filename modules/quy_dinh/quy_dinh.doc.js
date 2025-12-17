@@ -29,8 +29,101 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
+ *   patch:
+ *     tags: 
+ *       - QuyDinh 
+ *     summary: Cập nhật danh sách các quy định 
+ *     description: | 
+ *         Cập nhật danh sách quy định gửi lên
+ *         Các quy định có thể cập nhật gồm: ThoiGianHuy, ThoiGianDungMin, ThoiGianDungMax,
+ *          ThoiGianBayToiThieu, SanBayTrungGianToiDa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - quyDinhs
+ *             properties:
+ *               quyDinhs:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - tenQuyDinh
+ *                     - giaTri
+ *                   properties:
+ *                     tenQuyDinh:
+ *                       type: string
+ *                       example: ThoiGianHuy
+ *                     giaTri:
+ *                       type: integer
+ *                       example: 60
+ *     responses:
+ *       200:
+ *         description: Cập nhật các quy định thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Cập nhật các quy định thành công!"
+ *                 data: 
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/QuyDinhObject"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BaseError"
  *
  * /quy-dinh/{tenQuyDinh}:
+ *   get:
+ *     tags:
+ *       - QuyDinh 
+ *     summary: Lấy giá trị của quy định theo tên
+ *     description: | 
+ *         Các quy định có thể lấy giá trị gồm: ThoiGianHuy, ThoiGianDungMin, ThoiGianDungMax,
+ *          ThoiGianBayToiThieu, SanBayTrungGianToiDa
+ *     parameters:
+ *       - in: path
+ *         name: tenQuyDinh
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: ThoiGianHuy
+ *         description: Tên quy định cần lấy giá trị
+ *     responses:
+ *       200:
+ *         description: Lấy quy định theo tên thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy quy định theo tên thành công!"
+ *                 data: 
+ *                   type: integer
+ *                   example: 60
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BaseError"
  *   put:
  *     tags:
  *       - QuyDinh 
@@ -61,7 +154,7 @@
  *                 example: 60
  *     responses:
  *       200:
- *         description: Thông tin số lượng sân bay
+ *         description: Cập nhật quy định thành công
  *         content:
  *           application/json:
  *             schema:
@@ -72,10 +165,9 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Lấy sân bay thành công!"
+ *                   example: "Cập nhật quy định thành công!"
  *                 data: 
- *                   type: integer
- *                   example: 20
+ *                   $ref: "#/components/schemas/QuyDinhObject"
  *       500:
  *         description: Lỗi server
  *         content:
@@ -83,116 +175,4 @@
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
  * 
- * /san-bay/{maSanBay}:
- *   get:
- *     tags:
- *       - SanBay 
- *     summary: Lấy thông tin sân bay theo maSanBay
- *     parameters:
- *       - in: path
- *         name: maSanBay
- *         required: true
- *         schema:
- *           type: integer
- *         description: Mã sân bay
- *         example: 1
- *     responses:
- *       200:
- *         description: Thông tin sân bay
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Lấy sân bay thành công!"
- *                 data:
- *                   $ref: "#/components/schemas/SanBayObject"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- *
- *   patch:
- *     tags:
- *       - SanBay 
- *     summary: Cập nhật sân bay
- *     parameters:
- *       - in: path
- *         name: maSanBay
- *         required: true
- *         schema:
- *           type: string
- *         description: Mã sân bay cần cập nhật
- *         example: SB001
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/CapNhatSanBayDto"
- *     responses:
- *       200:
- *         description: Cập nhật sân bay thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Sân bay được cập nhật thành công"
- *                 data:
- *                   $ref: "#/components/schemas/SanBayObject"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- *
- *   delete:
- *     tags:
- *       - SanBay 
- *     summary: Xóa sân bay
- *     parameters:
- *       - in: path
- *         name: maSanBay
- *         required: true
- *         schema:
- *           type: string
- *         description: Mã sân bay cần xóa
- *         example: SB001
- *     responses:
- *       200:
- *         description: Xóa sân bay thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Xóa sân bay thành công"
- *                 data:
- *                   type: object
- *                   example: {}
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- */
+ * */

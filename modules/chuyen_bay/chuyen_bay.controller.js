@@ -20,7 +20,7 @@ const createChuyenBayController = (chuyenBayService) => ({
             const result=await chuyenBayService.layLichChuyenBayTheoMaChuyenBay(maChuyenBay,req.query);
             res.status(200).json({
                 success: true,
-                message: "Lấy lịch chuyến bay cụ thể thành công!",
+                message: "Lấy lịch chuyến bay theo mã chuyến bay thành công!",
                 data: result
             });
         } catch (err) {

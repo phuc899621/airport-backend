@@ -22,7 +22,7 @@ const createHangVeController = (hangVeService) => ({
       const result = await hangVeService.layHangVe();
       return res.status(200).json({
         success: true,
-        message: "Lấy hạng vé thành công!",
+        message: "Lấy danh sách hạng vé thành công!",
         data: result
       });
     } catch (error) {

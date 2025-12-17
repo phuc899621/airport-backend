@@ -45,5 +45,4 @@ router.post("/:maChuyenBay/san-bay",
 router.post("/:maChuyenBay/hang-ve", 
     validate(chuyenBayValidator.taoHangVeChuyenBayParams,ValidateOption.PARAMS),
     validate(chuyenBayValidator.taoHangVeChuyenBayBody),chuyenBayController.taoHangVeChuyenBay);
-
     export default router;

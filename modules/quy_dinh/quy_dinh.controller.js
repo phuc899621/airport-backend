@@ -23,7 +23,7 @@ const createQuyDinhController = (quyDinhService) => ({
       const quyDinh = await quyDinhService.capNhatNhieuQuyDinh(req.body.quyDinhs);
       res.status(200).json({
         success: true,
-        message: "Cập nhật quy định thành công!",
+        message: "Cập nhật các quy định thành công!",
         data: quyDinh,
       });
     } catch (err) {
@@ -33,10 +33,10 @@ const createQuyDinhController = (quyDinhService) => ({
 
   layQuyDinh: async (req, res, next) => {
     try {
-      const quyDinh = await quyDinhService.layQuyDinh(r);
+      const quyDinh = await quyDinhService.layQuyDinh();
       res.status(200).json({
         success: true,
-        message: "Lấy quy định thành công!",
+        message: "Lấy danh sách các quy định thành công!",
         data: quyDinh,
       });
     } catch (err) {

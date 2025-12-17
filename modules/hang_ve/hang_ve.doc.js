@@ -1,27 +1,13 @@
 /**
  * @swagger
- * /san-bay:
+ * /hang-ve:
  *   get:
  *     tags:
- *       - SanBay
- *     summary: Lấy danh sách sân bay
- *     description: Lấy tất cả sân bay, có thể filter theo query params như quocGia.
- *     parameters:
- *       - in: query
- *         name: quocGia
- *         schema:
- *           type: string
- *         description: Lọc sân bay theo quốc gia
- *         example: Việt Nam
- *       - in: query
- *         name: tenSanBay
- *         schema:
- *           type: string
- *         description: Lọc sân bay theo tên sân bay
- *         example: Sân bay Nội Bài
+ *       - HangVe
+ *     summary: Lấy danh sách các hạng vé
  *     responses:
  *       200:
- *         description: Lấy danh sách sân bay thành công
+ *         description: Lấy danh sách hạng vé thành công
  *         content:
  *           application/json:
  *             schema:
@@ -32,23 +18,21 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Lấy sân bay thành công!"
+ *                   example: "Lấy danh sách hạng vé thành công!"
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: "#/components/schemas/SanBayObject"
+ *                     $ref: "#/components/schemas/HangVeObject"
  *       500:
  *         description: Lỗi server
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
- *
  *   post:
- *     tags:
- *       - SanBay 
- *     summary: Tạo sân bay mới
- *     description: Thêm một sân bay mới vào hệ thống
+ *     tags: 
+ *       - HangVe 
+ *     summary: Thêm hạng vé mới
  *     requestBody:
  *       required: true
  *       content:
@@ -56,55 +40,18 @@
  *           schema:
  *             type: object
  *             required:
- *               - tenSanBay
- *               - quocGia
+ *               - tenHangVe
+ *               - heSoGia
  *             properties:
- *               tenSanBay:
+ *               tenHangVe:
  *                 type: string
- *                 example: "Sân bay Nội Bài"
- *               quocGia:
- *                 type: string
- *                 example: "Việt Nam"
- *     responses:
- *       201:
- *         description: Sân bay được tạo thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Sân bay được tạo thành công"
- *                 data:
- *                   $ref: "#/components/schemas/SanBayObject"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- * 
-
- * /san-bay/{maSanBay}:
- *   get:
- *     tags:
- *       - SanBay 
- *     summary: Lấy thông tin sân bay theo maSanBay
- *     parameters:
- *       - in: path
- *         name: maSanBay
- *         required: true
- *         schema:
- *           type: integer
- *         description: Mã sân bay
- *         example: 1
+ *                 example: 'Hạng nhất'
+ *               heSoGia:
+ *                 type: integer
+ *                 example: 1.25
  *     responses:
  *       200:
- *         description: Thông tin sân bay
+ *         description: Thêm hạng vé mới thành công
  *         content:
  *           application/json:
  *             schema:
@@ -115,13 +62,50 @@
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "Lấy sân bay thành công!"
- *                 data:
- *                   $ref: "#/components/schemas/SanBayObject"
+ *                   example: "Tạo hạng vé mới thành công!"
+ *                 data: 
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/HangVeObject"
  *       500:
  *         description: Lỗi server
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
- */
+ *
+ * /hang-ve/{maHangVe}:
+ *   get:
+ *     tags:
+ *       - HangVe 
+ *     summary: Lấy hạng vé theo mã hạng vé
+ *     parameters:
+ *       - in: path
+ *         name: maHangVe
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: HV001
+ *     responses:
+ *       200:
+ *         description: Lấy hạng vé theo mã hạng vé thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Lấy hạng vé theo mã hạng vé thành công!"
+ *                 data: 
+ *                   $ref: "#/components/schemas/HangVeObject"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/BaseError"
+ * */

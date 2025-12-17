@@ -15,6 +15,7 @@ const createQuyDinhService = (quyDinhRepo) => {
   };
 
   const capNhatNhieuQuyDinh = async (dsQuyDinh, tx) => {
+    for (const quyDinh of dsQuyDinh) await kiemTraQuyDinhTonTai(quyDinh.tenQuyDinh);
     const result = await quyDinhRepo.capNhatNhieuQuyDinh(dsQuyDinh, tx);
     return result.map(QuyDinhMapper.toResponse);
   };

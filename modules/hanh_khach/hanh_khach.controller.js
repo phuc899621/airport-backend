@@ -7,7 +7,7 @@ import { errorHandler } from "../../core/errors/error_handler.js";
       const hanhKhach = await hanhKhachService.layHanhKhach(maHanhKhach, req.query);
       res.status(200).json({
         success: true,
-        message: "Lấy hành khách thành công!",
+        message: "Lấy danh sách hành khách thành công!",
         data: hanhKhach,
       });
     } catch (err) {

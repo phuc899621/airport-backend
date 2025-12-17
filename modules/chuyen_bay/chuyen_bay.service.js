@@ -102,10 +102,10 @@ const createChuyenBayService = (
         if (maSanBay) {
             const sbRaw = await sanBayTrungGianRepo.laySanBayTrungGian(maChuyenBay, maSanBay);
             if(!sbRaw) throw new NotFoundError("Sân bay trung gian không tồn tại");
-            return ChuyenBayMapper.toSanbayTrungGianChiTietResponse(sbRaw);
+            return ChuyenBayMapper.toSanBayTrungGianChiTietResponse(sbRaw);
         }
         const dsRaw = await sanBayTrungGianRepo.laySanBayTrungGianTheoMaChuyenBay(maChuyenBay);
-        return dsRaw.map(ChuyenBayMapper.toSanbayTrungGianChiTietResponse);
+        return dsRaw.map(ChuyenBayMapper.toSanBayTrungGianChiTietResponse);
     };0
 
 

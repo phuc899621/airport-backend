@@ -47,9 +47,9 @@
  *         name: maChuyenBay
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Mã chuyến bay
- *         example: 10
+ *         example: "CB001"
  *     responses:
  *       200:
  *         description: Lấy chuyến bay thành công
@@ -65,7 +65,7 @@
  *                   type: string
  *                   example: "Lấy chuyến bay thành công!"
  *                 data:
- *                   $ref: "#/components/schemas/LichChuyenBayObject"
+ *                   $ref: "#/components/schemas/LichChuyenBayChiTietObject"
  *       500:
  *         description: Lỗi server
  *         content:
@@ -85,7 +85,66 @@
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/TaoChuyenBayDto"
+ *             type: object
+ *             required: 
+ *               - maChuyenBay
+ *               - maSanBayDi
+ *               - maSanBayDen
+ *               - thoiGianBay
+ *               - ngayGio
+ *               - giaVeCoBan
+ *               - hangVes
+ *             properties:
+ *               maChuyenBay:
+ *                 type: string
+ *                 example: "CB001"
+ *               maSanBayDi:
+ *                 type: string
+ *                 example: "SB001"
+ *               maSanBayDen:
+ *                 type: string
+ *                 example: "SB002"
+ *               thoiGianBay:
+ *                 type: integer
+ *                 example: 240
+ *               ngayGio:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2025-12-02T03:30:00.000Z"
+ *               giaVeCoBan:
+ *                 type: integer
+ *                 example: 100000
+ *               sanBayTrungGians:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - maSanBay
+ *                     - thoiGianDung
+ *                   properties:
+ *                     maSanBay:
+ *                       type: string
+ *                       example: "SB001"
+ *                     thoiGianDung:
+ *                       type: integer
+ *                       example: 20
+ *                     ghiChu:
+ *                       type: string
+ *                       example: "Ghi chú"
+ *               hangVes: 
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - maHangVe
+ *                     - tongSoGhe
+ *                   properties:
+ *                     maHangVe:
+ *                       type: string
+ *                       example: "HV001"
+ *                     tongSoGhe:
+ *                       type: integer
+ *                       example: 14
  *     responses:
  *       201:
  *         description: Tạo chuyến bay thành công
@@ -100,94 +159,6 @@
  *                   type: string
  *                   example: "Tạo chuyến bay thành công!"
  *                 data:
- *                   $ref: "#/components/schemas/ChuyenBayObject"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- */
-
-
-
-/**
- * @swagger
- * /chuyen-bay/{maChuyenBay}:
- *   patch:
- *     tags:
- *       - ChuyenBay 
- *     summary: Cập nhật thông tin chuyến bay
- *     description: API cập nhật thông tin chi tiết của một chuyến bay.
- *     parameters:
- *       - in: path
- *         name: maChuyenBay
- *         required: true
- *         schema:
- *           type: integer
- *         description: Mã chuyến bay cần cập nhật
- *         example: 10
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/CapNhatChuyenBayDto"
- *     responses:
- *       200:
- *         description: Cập nhật chuyến bay thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                   example: "Cập nhật chuyến bay thành công!"
- *                 data:
- *                   $ref: "#/components/schemas/ChuyenBayObject"
-
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/BaseError"
- */
-
-
-/**
- * @swagger
- * /chuyen-bay/{maChuyenBay}:
- *   delete:
- *     tags:
- *       - ChuyenBay
- *     summary: Xóa chuyến bay
- *     description: API xóa một chuyến bay theo mã chuyến bay.
- *     parameters:
- *       - in: path
- *         name: maChuyenBay
- *         required: true
- *         schema:
- *           type: integer
- *         description: Mã chuyến bay 
- *         example: 10
- *     responses:
- *       200:
- *         description: Xóa chuyến bay thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                   example: "Xóa chuyến bay thành công!"
- *                 data:
  *                   type: object
  *                   example: {}
  *       500:
@@ -196,4 +167,4 @@
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/BaseError"
- */ 
+ */

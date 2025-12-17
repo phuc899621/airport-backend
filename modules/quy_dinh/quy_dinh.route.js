@@ -17,5 +17,5 @@ router.get("/:tenQuyDinh", quyDinhController.layQuyDinhTheoTen);
 router.put("/:tenQuyDinh",
     validate(quyDinhValidator.capNhatQuyDinhParams,ValidateOption.PARAMS),
     validate(quyDinhValidator.capNhatQuyDinhBody),quyDinhController.capNhatQuyDinh);
-router.patch("/",quyDinhController.capNhatNhieuQuyDinh)
+router.patch("/",validate(quyDinhValidator.capNhatNhieuQuyDinhBody),quyDinhController.capNhatNhieuQuyDinh)
 export default router;

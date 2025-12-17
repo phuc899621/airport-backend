@@ -72,7 +72,7 @@ export const ChuyenBayMapper = {
                 if (!item._sbTGSet.has(key)) {
                     item._sbTGSet.add(key);
                     item.sanBayTrungGian.push(
-                        ChuyenBayMapper.toSanBayTrungGianResponse(cb)
+                        ChuyenBayMapper.toSanBayTrungGianChiTietResponse(cb)
                     );
                 }
             }
@@ -98,7 +98,6 @@ export const ChuyenBayMapper = {
     toSanBayTrungGianResponse: (row) => ({
         maChuyenBay: row.MaCB,
         maSanBay: row.MaSB,
-        tenSanBay: row.TenSB,
         thoiGianDung: Number(row.ThoiGianDung),
         thuTuDung: Number(row.ThuTuDung),
         ghiChu: row.GhiChu
@@ -118,7 +117,7 @@ export const ChuyenBayMapper = {
         thoiGianBay: Number(row.ThoiGianBay),
         giaVe: Number(row.GiaVe),
     }),
-    toSanbayTrungGianChiTietResponse: (row) => ({
+    toSanBayTrungGianChiTietResponse: (row) => ({
         maChuyenBay: row.MaCB,
         maSanBay: row.MaSB,
         tenSanBay: row.TenSB,

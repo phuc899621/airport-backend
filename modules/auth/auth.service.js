@@ -1,118 +1,62 @@
-import { ValidationError } from "../../core/errors/errors.js";
-import TaiKhoanBO from "./tai_khoan.bo.js";
-import EmailService from "./email.service.js";
+import { AuthenticationError } from "../../core/errors/errors.js";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import 'dotenv/config'
 
-export class AuthService {
-    constructor(db, taiKhoanService, otpService) {
-        this.db = db;
-        this.taiKhoanService = taiKhoanService;
-        this.otpService= otpService;
+const createAuthService = (taiKhoanRepo) => {
+    const maHoaMatKhau = async (matKhau) => {
+        return await bcrypt.hash(matKhau, 10);
     }
-    async dangKy(taiKhoanDto) {
-        await this.db.begin(async (tx) => {
-            const { tenDangNhap, matKhau, email } = taiKhoanDto;
-
-            const taiKhoanBO=new TaiKhoanBO({ TenDangNhap: tenDangNhap, MatKhau: matKhau, Email: email });
-            
-            const taiKhoanTonTaiChuaXacThuc=await this.taiKhoanService.kiemTraEmailVaTenDangNhap({ email, tenDangNhap },tx);
-            await taiKhoanBO.maHoaMatKhau();
-            taiKhoanBO.maTaiKhoan=taiKhoanTonTaiChuaXacThuc;
-    
-            const maTaiKhoan = taiKhoanTonTaiChuaXacThuc
-                ? await this.taiKhoanService.capNhatTenDangNhapMatKhau(taiKhoanBO,tx)
-                : await this.taiKhoanService.taoTaiKhoan(taiKhoanBO,tx);
-
-            const otp=await this.otpService.taoDangKyOTP(maTaiKhoan,tx);
-            await EmailService.guiOtpDangKy(email, otp);
-        });
+    const soSanhMatKhau = async (matKhau, maKhauMaHoa) => {
+        return await bcrypt.compare(matKhau, maKhauMaHoa);
     }
-
-    async xacThucDangKy(dto){
-        await this.db.begin(async (tx) => {
-            const { email,otp } = dto;
-            const taiKhoanBO = await this.taiKhoanService.layTaiKhoanBO({email},tx);
-            if (!taiKhoanBO.kiemTraDaXacThuc()) {
-                throw new ValidationError(400, 'Email chưa đăng ký!');
-            }
-            await this.otpService.kiemTraDangKyOTP(taiKhoanBO.maTaiKhoan,otp,tx);
-            await this.taiKhoanService.capNhatTaiKhoan(taiKhoanBO.maTaiKhoan,tx);
-            await this.otpService.xoaOTPDangKy(taiKhoanBO.maTaiKhoan,tx);
-            
-        })
+    const taoMaNhanVien = async () => {
+        const stt= await taiKhoanRepo.laySTTNhanVienTiepTheo();
+        if (!stt) throw new ServerError("Không thể tạo mã nhân viên");
+        return `NV${String(stt).padStart(3, '0')}`;
     }
-    async dangNhap(dto){
-        const [maTaiKhoan,vaiTro]=await this.db.begin(async (tx) => {
-            const { identifier, matKhau } = dto;
-            const taiKhoanBO= this.laEmail(identifier)
-                ?await this.taiKhoanService.layTaiKhoanBO({ email: identifier },tx): 
-                await this.taiKhoanService.layTaiKhoanBO({ tenDangNhap: identifier },tx);
-            console.log(taiKhoanBO);
-            if (!taiKhoanBO.kiemTraDaXacThuc()) {
-                throw new ValidationError('Tài khoản chưa đăng ký!');
-            }
-            
-            if (!await taiKhoanBO.soSanhMatKhau(matKhau)) {
-                throw new ValidationError('Mật khẩu không đúng!');
-            }
-            console.log(taiKhoanBO.soSanhMatKhau);
-            return [taiKhoanBO.maTaiKhoan,taiKhoanBO.vaiTro];
-        })
-        return this.taoSession(maTaiKhoan,vaiTro);
+    const taoTenDangNhap = async (ten, maNV) => {
+        const tenChuanHoa=ten
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z]/g, "");
+        return `${tenChuanHoa}_${maNV.toLowerCase()}`;
+        
     }
-
-    async quenMatKhau(dto){
-        await this.db.begin(async (tx) => {
-            const { email } = dto;
-            const taiKhoanBO = await this.taiKhoanService.kiemTraTaiKhoan({ email },tx);
-            const otp = await this.otpService.taoQuenMatKhauOTP(taiKhoanBO.maTaiKhoan,tx); 
-            await EmailService.guiOtpQuenMatKhau(email, otp);
-        })
-    }
-
-    async xacThucQuenMatKhau(dto){
-        return await this.db.begin(async (tx) => {
-            const { email, otp} = dto;
-            const taiKhoanBO = await this.taiKhoanService.kiemTraTaiKhoan({ email },tx);
-            await this.otpService.kiemTraQuenMatKhauOTP(taiKhoanBO.maTaiKhoan,otp,tx);
-            console.log(taiKhoanBO);
-            const token = this.taoToken(taiKhoanBO.maTaiKhoan);
-            await this.otpService.xoaOTPQuenMatKhau(taiKhoanBO.maTaiKhoan,tx);
-            return token;
-        })
-    }
-    async taoMoiMatKhau(dto){
-        await this.db.begin(async (tx) => {
-            const { matKhau, token } = dto;
-            const tokenDecode = this.giaiMaToken(token);
-            const maTaiKhoan = tokenDecode.MaTaiKhoan;
-            const taiKhoanBo = await this.taiKhoanService.layTaiKhoanBO({ maTaiKhoan },tx);
-            if (!taiKhoanBo.kiemTraDaXacThuc()) {
-                throw new ValidationError('Mã tạo mặt khẩu mới sai hoặc hết hạn!');
-            }
-            taiKhoanBo.matKhau = matKhau;
-            console.log("tai khoan"+taiKhoanBo);
-            await taiKhoanBo.maHoaMatKhau();
-            await this.taiKhoanService.capNhatMatKhau(taiKhoanBo.maTaiKhoan,taiKhoanBo.matKhau,tx);
-
-        })
-    }
-    laEmail(str){
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(str);
-    }
-    taoSession(maTaiKhoan,vaiTro){
-        const token= jwt.sign({ MaTaiKhoan: maTaiKhoan, VaiTro: vaiTro }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN ||'1h' });
+    const taoSessionNhanVien = async (maTaiKhoan, vaiTro) => { 
+        console.log(maTaiKhoan + vaiTro);
+        return jwt.sign(
+            { maTaiKhoan, vaiTro },
+             process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: "1d",
+            }); 
+    };
+    const dangNhapNhanVien = async (dangNhapDto) => {
+        const { tenDangNhap, matKhau } = dangNhapDto;
+        const taiKhoan = await taiKhoanRepo.layTaiKhoanNhanVienTheoTenDangNhap(tenDangNhap);
+        if (!taiKhoan) throw new AuthenticationError("Tên đăng nhập không tồn tại");
+        const soSanh = await soSanhMatKhau(matKhau, taiKhoan.MatKhau);
+        if (!soSanh) throw new AuthenticationError("Mật khâu không chính xác");
+        const token = await taoSessionNhanVien(taiKhoan.MaTK, taiKhoan.VaiTro);
         return token;
-    }
-    taoToken(maTaiKhoan){
-        return jwt.sign({ MaTaiKhoan: maTaiKhoan }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN ||'1h' });
-    }
-    giaiMaToken(token){
-        return jwt.verify(token, process.env.JWT_SECRET_KEY);
-    }
-    giaiMaSession(token){
-        return jwt.verify(token, process.env.JWT_SECRET_KEY);
-    }
+    };
 
-}
+    const taoTaiKhoanNhanVien = async (taoTaiKhoanDto) => {
+        const { tenDangNhap, matKhau } = taoTaiKhoanDto;
+        const maTaiKhoan = await taoMaNhanVien();
+        const matKhauMaHoa = await maHoaMatKhau(matKhau);
+        const tenDangNhapChuanHoa=await taoTenDangNhap(tenDangNhap, maTaiKhoan);
+        await taiKhoanRepo.taoTaiKhoanNhanVien({ maTaiKhoan, tenDangNhap:tenDangNhapChuanHoa, matKhau:matKhauMaHoa });
+        return;
+    }
+    return { 
+        dangNhapNhanVien,
+        taoTaiKhoanNhanVien
+        
+    };
+};
+
+export default createAuthService;
