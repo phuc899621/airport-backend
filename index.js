@@ -9,12 +9,18 @@ import HanhKhachRouter from "./modules/hanh_khach/hanh_khach.route.js";
 import VeRouter from "./modules/ve/ve.route.js";
 import BaoCaoRouter from "./modules/bao_cao/bao_cao.route.js";
 import HangVeRouter from "./modules/hang_ve/hang_ve.route.js";
+import cors from "cors";
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
 setupSwagger(app);
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(
   session({
     secret: "899621", 
