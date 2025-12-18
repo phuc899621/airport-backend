@@ -3,7 +3,7 @@ export const HanhKhachMapper = {
         return {
             maHanhKhach: row.MaHK,
             hoTen: row.HoTen,
-            cmnd: row.cmnd,
+            cmnd: row.CMND,
             dienThoai: row.DienThoai,
             email: row.Email
         }
