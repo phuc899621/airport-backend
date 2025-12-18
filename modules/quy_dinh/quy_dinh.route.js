@@ -6,16 +6,17 @@ import createQuyDinhService from "./quy_dinh.service.js";
 import createQuyDinhController from "./quy_dinh.controller.js";
 import createQuyDinhValidator from "./quy_dinh.validate.js";
 import db from "../../core/config/db.js";
+import { nhanVienMiddleware } from "../../middlewares/session.middlewares.js";
 const quyDinhRepo = createQuyDinhRepo(db);
 const quyDinhService = createQuyDinhService(quyDinhRepo);
 const quyDinhController = createQuyDinhController(quyDinhService);
 const quyDinhValidator = createQuyDinhValidator();
 const router = express.Router();
 
-router.get("/",quyDinhController.layQuyDinh);
-router.get("/:tenQuyDinh", quyDinhController.layQuyDinhTheoTen);
-router.put("/:tenQuyDinh",
+router.get("/",nhanVienMiddleware,quyDinhController.layQuyDinh);
+router.get("/:tenQuyDinh",nhanVienMiddleware, quyDinhController.layQuyDinhTheoTen);
+router.put("/:tenQuyDinh",nhanVienMiddleware,
     validate(quyDinhValidator.capNhatQuyDinhParams,ValidateOption.PARAMS),
     validate(quyDinhValidator.capNhatQuyDinhBody),quyDinhController.capNhatQuyDinh);
-router.patch("/",validate(quyDinhValidator.capNhatNhieuQuyDinhBody),quyDinhController.capNhatNhieuQuyDinh)
+router.patch("/",nhanVienMiddleware,validate(quyDinhValidator.capNhatNhieuQuyDinhBody),quyDinhController.capNhatNhieuQuyDinh)
 export default router;

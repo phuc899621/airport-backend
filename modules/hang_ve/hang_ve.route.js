@@ -6,14 +6,15 @@ import createHangVeController from "./hang_ve.controller.js";
 import { validate } from "../../middlewares/base.validator.js";
 import { createHangVeValidator } from "./hang_ve.validator.js";
 import ValidateOption from "../../middlewares/base.validator.option.js";
+import { nhanVienMiddleware } from "../../middlewares/session.middlewares.js";
 const hangVeValidator=createHangVeValidator();
 const hangVeRepo = createHangVeRepo(db);
 const hangVeService = createHangVeService(hangVeRepo);
 const hangVeController = createHangVeController(hangVeService);
 const router = express.Router();
 
-router.get("/",hangVeController.layHangVe);
-router.get("/:maHangVe", validate(hangVeValidator.layHangVeParams,ValidateOption.PARAMS), hangVeController.layHangVeTheoMaHangVe); 
-router.post("/", validate(hangVeValidator.taoHangVeBody),hangVeController.taoHangVe); 
+router.get("/",nhanVienMiddleware,hangVeController.layHangVe);
+router.get("/:maHangVe",nhanVienMiddleware,validate(hangVeValidator.layHangVeParams,ValidateOption.PARAMS), hangVeController.layHangVeTheoMaHangVe); 
+router.post("/",nhanVienMiddleware,validate(hangVeValidator.taoHangVeBody),hangVeController.taoHangVe); 
 
 export default router;

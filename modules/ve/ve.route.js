@@ -17,6 +17,7 @@ import createVeService from "./ve.service.js";
 import createVeController from "./ve.controller.js";
 import createVeValidator from "./ve.validator.js";
 import ValidateOption from "../../middlewares/base.validator.option.js";
+import { nhanVienMiddleware } from "../../middlewares/session.middlewares.js";
 
 
 const chuyenBayRepo = createChuyenBayRepo(db);
@@ -36,9 +37,9 @@ const veService = createVeService(veRepo,chuyenBayService,hangVeService,quyDinhS
 const veController = createVeController(veService);
 const veValidator = createVeValidator();
 
-router.post("/dat-ve",validate(veValidator.taoVeBody),veController.datVe);
-router.post("/mua-ve",validate(veValidator.taoVeBody),veController.muaVe);
+router.post("/dat-ve",nhanVienMiddleware,validate(veValidator.taoVeBody),veController.datVe);
+router.post("/mua-ve",nhanVienMiddleware,validate(veValidator.taoVeBody),veController.muaVe);
 router.get("/",veController.layVe);
-router.patch("/:maVe/thanh-toan",validate(veValidator.thanhToanParams,ValidateOption.PARAMS),veController.thanhToanVe);
-router.delete("/:maVe",validate(veValidator.huyVeParams,ValidateOption.PARAMS),veController.huyVe);
+router.patch("/:maVe/thanh-toan",nhanVienMiddleware,validate(veValidator.thanhToanParams,ValidateOption.PARAMS),veController.thanhToanVe);
+router.delete("/:maVe",nhanVienMiddleware,validate(veValidator.huyVeParams,ValidateOption.PARAMS),veController.huyVe);
 export default router;

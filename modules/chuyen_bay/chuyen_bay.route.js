@@ -1,6 +1,6 @@
 import express from "express";
 import { validate } from "../../middlewares/base.validator.js";
-import { sessionMiddleware } from "../../middlewares/session.middlewares.js";
+import { nhanVienMiddleware, sessionMiddleware } from "../../middlewares/session.middlewares.js";
 import ValidateOption from "../../middlewares/base.validator.option.js";
 import createChuyenBayService from "./chuyen_bay.service.js";
 import createChuyenBayRepo from "./chuyen_bay.repo.js";
@@ -31,18 +31,18 @@ const chuyenBayService = createChuyenBayService(
 const chuyenBayController = createChuyenBayController(chuyenBayService);
 const router = express.Router();
 
-router.get("/",chuyenBayController.layLichChuyenBay); 
-router.get("/:maChuyenBay", validate(chuyenBayValidator.layChuyenBayParams,ValidateOption.PARAMS),chuyenBayController.layLichChuyenBayTheoMaChuyenBay);
-router.get("/:maChuyenBay/san-bay", validate(chuyenBayValidator.layDanhSachSanBayTrungGianParams,ValidateOption.PARAMS),chuyenBayController.laySanBayTrungGian);
-router.get("/:maChuyenBay/san-bay/:maSanBay", validate(chuyenBayValidator.laySanBayTrungGianParamsSchema,ValidateOption.PARAMS),chuyenBayController.laySanBayTrungGian);
-router.get("/:maChuyenBay/hang-ve",validate(chuyenBayValidator.layHangVeChuyenBayParams,ValidateOption.PARAMS) ,chuyenBayController.layHangVeChuyenBay);
+router.get("/",nhanVienMiddleware,chuyenBayController.layLichChuyenBay); 
+router.get("/:maChuyenBay",nhanVienMiddleware,validate(chuyenBayValidator.layChuyenBayParams,ValidateOption.PARAMS),chuyenBayController.layLichChuyenBayTheoMaChuyenBay);
+router.get("/:maChuyenBay/san-bay",nhanVienMiddleware,validate(chuyenBayValidator.layDanhSachSanBayTrungGianParams,ValidateOption.PARAMS),chuyenBayController.laySanBayTrungGian);
+router.get("/:maChuyenBay/san-bay/:maSanBay",nhanVienMiddleware,validate(chuyenBayValidator.laySanBayTrungGianParamsSchema,ValidateOption.PARAMS),chuyenBayController.laySanBayTrungGian);
+router.get("/:maChuyenBay/hang-ve",nhanVienMiddleware,validate(chuyenBayValidator.layHangVeChuyenBayParams,ValidateOption.PARAMS) ,chuyenBayController.layHangVeChuyenBay);
 
-router.post("/", 
+router.post("/",nhanVienMiddleware, 
     validate(chuyenBayValidator.taoChuyenBayBody),chuyenBayController.taoChuyenBay);
-router.post("/:maChuyenBay/san-bay", 
+router.post("/:maChuyenBay/san-bay",nhanVienMiddleware, 
     validate(chuyenBayValidator.taoSanBayTrungGianParams,ValidateOption.PARAMS),
     validate(chuyenBayValidator.taoSanBayTrungGianBody),chuyenBayController.taoSanBayTrungGian);
-router.post("/:maChuyenBay/hang-ve", 
+router.post("/:maChuyenBay/hang-ve",nhanVienMiddleware, 
     validate(chuyenBayValidator.taoHangVeChuyenBayParams,ValidateOption.PARAMS),
     validate(chuyenBayValidator.taoHangVeChuyenBayBody),chuyenBayController.taoHangVeChuyenBay);
     export default router;
