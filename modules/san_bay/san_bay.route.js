@@ -14,8 +14,8 @@ const sanBayController = createSanBayController(sanBayService);
 const sanBayValidator = createSanBayValidator();
 const router = express.Router();
 
-router.get("/",nhanVienMiddleware, validate(sanBayValidator.laySanBayQuery,ValidateOption.QUERY),sanBayController.laySanBay); 
-router.get("/:maSanBay",nhanVienMiddleware, validate(sanBayValidator.laySanBayParams,ValidateOption.PARAMS),sanBayController.laySanBay);
-router.post("/",nhanVienMiddleware,validate(sanBayValidator.taoSanBayBody),sanBayController.taoSanBay); 
+router.get("/",validate(sanBayValidator.laySanBayQuery,ValidateOption.QUERY),sanBayController.laySanBay); 
+router.get("/:maSanBay", validate(sanBayValidator.laySanBayParams,ValidateOption.PARAMS),sanBayController.laySanBay);
+router.post("/",validate(sanBayValidator.taoSanBayBody),sanBayController.taoSanBay); 
 
 export default router;

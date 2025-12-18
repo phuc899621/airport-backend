@@ -13,8 +13,8 @@ const hangVeService = createHangVeService(hangVeRepo);
 const hangVeController = createHangVeController(hangVeService);
 const router = express.Router();
 
-router.get("/",nhanVienMiddleware,hangVeController.layHangVe);
-router.get("/:maHangVe",nhanVienMiddleware,validate(hangVeValidator.layHangVeParams,ValidateOption.PARAMS), hangVeController.layHangVeTheoMaHangVe); 
-router.post("/",nhanVienMiddleware,validate(hangVeValidator.taoHangVeBody),hangVeController.taoHangVe); 
+router.get("/",hangVeController.layHangVe);
+router.get("/:maHangVe",validate(hangVeValidator.layHangVeParams,ValidateOption.PARAMS), hangVeController.layHangVeTheoMaHangVe); 
+router.post("/",validate(hangVeValidator.taoHangVeBody),hangVeController.taoHangVe); 
 
 export default router;

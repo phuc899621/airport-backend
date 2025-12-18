@@ -5,6 +5,6 @@ import { nhanVienMiddleware } from "../../middlewares/session.middlewares.js";
 
 const router = express.Router();
 
-router.get("/thang/:nam",nhanVienMiddleware,BaoCaoController.layBaoCaoTheoThang);
-router.get("/nam/:nam",nhanVienMiddleware,BaoCaoController.layBaoCaoTheoNam);
+router.get("/thang/:nam",BaoCaoController.layBaoCaoTheoThang);
+router.get("/nam/:nam",BaoCaoController.layBaoCaoTheoNam);
 export default router;

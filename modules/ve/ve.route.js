@@ -37,9 +37,9 @@ const veService = createVeService(veRepo,chuyenBayService,hangVeService,quyDinhS
 const veController = createVeController(veService);
 const veValidator = createVeValidator();
 
-router.post("/dat-ve",nhanVienMiddleware,validate(veValidator.taoVeBody),veController.datVe);
-router.post("/mua-ve",nhanVienMiddleware,validate(veValidator.taoVeBody),veController.muaVe);
-router.get("/",nhanVienMiddleware,veController.layVe);
-router.patch("/:maVe/thanh-toan",nhanVienMiddleware,validate(veValidator.thanhToanParams,ValidateOption.PARAMS),veController.thanhToanVe);
-router.delete("/:maVe",nhanVienMiddleware,validate(veValidator.huyVeParams,ValidateOption.PARAMS),veController.huyVe);
+router.post("/dat-ve",validate(veValidator.taoVeBody),veController.datVe);
+router.post("/mua-ve",validate(veValidator.taoVeBody),veController.muaVe);
+router.get("/",veController.layVe);
+router.patch("/:maVe/thanh-toan",validate(veValidator.thanhToanParams,ValidateOption.PARAMS),veController.thanhToanVe);
+router.delete("/:maVe",validate(veValidator.huyVeParams,ValidateOption.PARAMS),veController.huyVe);
 export default router;

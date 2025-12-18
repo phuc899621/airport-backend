@@ -13,10 +13,10 @@ const quyDinhController = createQuyDinhController(quyDinhService);
 const quyDinhValidator = createQuyDinhValidator();
 const router = express.Router();
 
-router.get("/",nhanVienMiddleware,quyDinhController.layQuyDinh);
-router.get("/:tenQuyDinh",nhanVienMiddleware, quyDinhController.layQuyDinhTheoTen);
-router.put("/:tenQuyDinh",nhanVienMiddleware,
+router.get("/",quyDinhController.layQuyDinh);
+router.get("/:tenQuyDinh", quyDinhController.layQuyDinhTheoTen);
+router.put("/:tenQuyDinh",
     validate(quyDinhValidator.capNhatQuyDinhParams,ValidateOption.PARAMS),
     validate(quyDinhValidator.capNhatQuyDinhBody),quyDinhController.capNhatQuyDinh);
-router.patch("/",nhanVienMiddleware,validate(quyDinhValidator.capNhatNhieuQuyDinhBody),quyDinhController.capNhatNhieuQuyDinh)
+router.patch("/",validate(quyDinhValidator.capNhatNhieuQuyDinhBody),quyDinhController.capNhatNhieuQuyDinh)
 export default router;

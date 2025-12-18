@@ -13,12 +13,12 @@ const hanhKhachService = createHanhKhachService(hanhKhachRepo);
 const hanhKhachController = createHanhKhachController(hanhKhachService);
 const router = express.Router();
 
-router.get("/",nhanVienMiddleware,
+router.get("/",
     validate(hanhKhachValidator.layHanhKhachQuery,ValidateOption.QUERY),
     hanhKhachController.layHanhKhach); 
-router.get("/:maHanhKhach",nhanVienMiddleware,
+router.get("/:maHanhKhach",
     validate(hanhKhachValidator.layHanhKhachParams,ValidateOption.PARAMS),
     hanhKhachController.layHanhKhach);
-router.post("/", nhanVienMiddleware,
+router.post("/",
     validate(hanhKhachValidator.taoHanhKhachBody),hanhKhachController.taoHanhKhach); 
 export default router;
