@@ -10,11 +10,12 @@ import VeRouter from "./modules/ve/ve.route.js";
 import BaoCaoRouter from "./modules/bao_cao/bao_cao.route.js";
 import HangVeRouter from "./modules/hang_ve/hang_ve.route.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-
+app.use(cookieParser());
 setupSwagger(app);
 
 app.use(cors({
